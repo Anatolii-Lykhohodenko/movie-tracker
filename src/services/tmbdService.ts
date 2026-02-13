@@ -21,7 +21,7 @@ export const getPopularMovies = () : Promise<TMDBResponse> => {
 };
 
 export const getMoviesByQuery = (query: string) : Promise<TMDBResponse> => {
-  return fetchTMDB(`/search/movie&query=${encodeURIComponent(query)}`);
+  return fetchTMDB(`/search/movie?query=${encodeURIComponent(query)}`);
 }
 
 export const getMovieById = (ID: number) : Promise<Movie> => {
