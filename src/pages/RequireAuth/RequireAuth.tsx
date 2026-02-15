@@ -1,5 +1,5 @@
-import type React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import type React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 
 export const RequireAuth: React.FC = () => {
   const isAuth = false;
@@ -8,7 +8,5 @@ export const RequireAuth: React.FC = () => {
     return <Navigate to="/login" />;
   }
 
-  return (
-      <Outlet />
-  );
+  return <Outlet />;
 };

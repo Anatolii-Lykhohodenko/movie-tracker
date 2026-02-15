@@ -1,8 +1,8 @@
-import type React from 'react'
-import './App.css'
-import { Link, Outlet } from 'react-router-dom'
+import type React from 'react';
+import './App.css';
+import { Link, Outlet } from 'react-router-dom';
 
-export const App : React.FC  = () =>  {
+export const App: React.FC = () => {
   return (
     <>
       <Link to="/">HomePage</Link>
@@ -13,5 +13,4 @@ export const App : React.FC  = () =>  {
       </div>
     </>
   );
-}
-
+};

@@ -19,6 +19,9 @@ dist-ssr
 .env
 .env.local
 .env*.local
+.eslintcache
+.prettiercache
+
 
 # Editor directories and files
 .vscode/*
