@@ -1,4 +1,5 @@
 import type React from 'react';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import './App.css';
 import { Link, Outlet } from 'react-router-dom';
 

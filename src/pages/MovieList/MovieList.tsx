@@ -8,10 +8,10 @@ interface Props {
 
 export const MovieList : React.FC<Props> = ({ movies }) => {
   return (
-    <>
-      {movies.map((movie) => {
+    <div className="columns is-multiline is-mobile">
+      {movies.map(movie => {
         return <MovieCard movie={movie} key={movie.id} />;
       })}
-    </>
+    </div>
   );
 }
