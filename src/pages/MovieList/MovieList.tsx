@@ -1,12 +1,12 @@
-import type React from "react";
-import type { Movie } from "../../types/tmbd";
-import { MovieCard } from "../MovieCard";
+import type React from 'react';
+import type { MovieListItem } from '../../types/tmbd';
+import { MovieCard } from '../MovieCard';
 
 interface Props {
-  movies: Movie[]
+  movies: MovieListItem[];
 }
 
-export const MovieList : React.FC<Props> = ({ movies }) => {
+export const MovieList: React.FC<Props> = ({ movies }) => {
   return (
     <div className="columns is-multiline is-mobile">
       {movies.map(movie => {
@@ -14,4 +14,4 @@ export const MovieList : React.FC<Props> = ({ movies }) => {
       })}
     </div>
   );
-}
+};

@@ -1,16 +1,18 @@
 import type React from 'react';
-import type { Movie } from '../../types/tmbd';
-import styles from './MovieCard.module.scss';
 import { Link } from 'react-router-dom';
 import { PLACEHOLDER_POSTER } from '../../components/constants/images';
-const BASE_IMAGE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
+import type { Movie } from '../../types/tmbd';
+import styles from './MovieCard.module.scss';
+import { TMDB_IMAGE_SIZES } from '../../components/constants/images';
 
 interface Props {
   movie: Movie;
 }
 
 export const MovieCard: React.FC<Props> = ({ movie }) => {
-  const imgUrl = movie?.poster_path ? `${BASE_IMAGE_URL}${movie.poster_path}` : PLACEHOLDER_POSTER;
+  const imgUrl = movie?.poster_path
+    ? `${TMDB_IMAGE_SIZES.poster.large}${movie.poster_path}`
+    : PLACEHOLDER_POSTER;
   // const { isAuthenticated } = useAuth();
   // const { isInWishlist, toggleWishlist } = useWishlist();
 
@@ -86,4 +88,5 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
         </div>
       </div>
     </div>
-  );};
+  );
+};
