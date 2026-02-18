@@ -3,7 +3,7 @@ import { App } from './App';
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
 import { MovieDetail } from './pages/MovieDetail';
-import { WatchList } from './pages/WatchList';
+import { WatchlistPage } from './pages/WatchlistPage';
 import { Profile } from './pages/Profile';
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage';
 import { RequireAuth } from './pages/RequireAuth';
@@ -17,8 +17,11 @@ export const Root = () => (
         <Route path="login" element={<AuthPage />}></Route>
         <Route path="register" element={<AuthPage />}></Route>
         <Route path="movie/:id" element={<MovieDetail />}></Route>
-        <Route path="watchlist" element={<RequireAuth />}>
-          <Route index element={<WatchList />} />
+        <Route 
+          path="watchlist" 
+          // element={<RequireAuth />}
+        >
+          <Route index element={<WatchlistPage />} />
         </Route>
         <Route path="profile" element={<RequireAuth />}>
           <Route index element={<Profile />}></Route>

@@ -1,0 +1,9 @@
+.navbar-item .tag {
+  position: relative;
+  top: -2px; /* Чуть выше */
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 0.5rem;
+}

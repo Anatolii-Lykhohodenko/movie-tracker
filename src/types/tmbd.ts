@@ -22,7 +22,7 @@ export interface MovieDetail extends MovieBase {
 export type Movie = MovieListItem | MovieDetail;
 export interface MovieInfo {
   movie: MovieDetail;
-  recommendations?: TMDBResponse;
+  similar?: TMDBResponse;
   credits?: Credits;
 };
 

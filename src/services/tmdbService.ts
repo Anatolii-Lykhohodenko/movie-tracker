@@ -1,4 +1,4 @@
-import type { Credits, MovieDetail, MovieInfo, TMDBResponse } from '../types/tmbd';
+import type { Credits, MovieDetail, MovieInfo, MovieListItem, TMDBResponse } from '../types/tmbd';
 
 const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -29,16 +29,16 @@ export const getMoviesByQuery = (query: string): Promise<TMDBResponse> => {
   return fetchTMDB<TMDBResponse>('/search/movie', { query });
 };
 
-export const getMovieById = (id: number): Promise<MovieDetail> => {
-  return fetchTMDB<MovieDetail>(`/movie/${id}`);
+export const getMovieById = (id: number): Promise<MovieListItem> => {
+  return fetchTMDB<MovieListItem>(`/movie/${id}`);
 };
 
 export const getMovieInfoById = async (id: number): Promise<MovieInfo> => {
-  const [movie, recommendations, credits] = await Promise.all([
+  const [movie, similar, credits] = await Promise.all([
     fetchTMDB<MovieDetail>(`/movie/${id}`),
-    fetchTMDB<TMDBResponse>(`/movie/${id}/recommendations`),
+    fetchTMDB<TMDBResponse>(`/movie/${id}/similar`),
     fetchTMDB<Credits>(`/movie/${id}/credits`),
   ]);
 
-  return { movie, recommendations, credits };
+  return { movie, similar, credits };
 };

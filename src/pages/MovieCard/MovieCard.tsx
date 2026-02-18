@@ -4,28 +4,19 @@ import { PLACEHOLDER_POSTER } from '../../components/constants/images';
 import type { Movie } from '../../types/tmbd';
 import styles from './MovieCard.module.scss';
 import { TMDB_IMAGE_SIZES } from '../../components/constants/images';
+import { useWatchListContext } from '../../contexts/WatchListContext';
 
 interface Props {
   movie: Movie;
 }
 
 export const MovieCard: React.FC<Props> = ({ movie }) => {
+  const { isInWatchlist, toggleWatchlist } = useWatchListContext();
   const imgUrl = movie?.poster_path
     ? `${TMDB_IMAGE_SIZES.poster.large}${movie.poster_path}`
     : PLACEHOLDER_POSTER;
   // const { isAuthenticated } = useAuth();
-  // const { isInWishlist, toggleWishlist } = useWishlist();
 
-  // const inWishlist = isInWishlist(movie.id);
-
-  // const handleWishlistClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-
-  //   // Заглушка: либо внешний колбэк, либо контекст
-  //   onAddToWishlist?.(movie.id);
-  //   toggleWishlist(movie);
-  // };
 
   return (
     <div
@@ -71,19 +62,25 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
             ) : (
               <span className="tag">No ratings</span>
             )}
-            {/* {isAuthenticated && (
+            <div className={styles.cardFooter}>
               <button
-                type="button"
-                className={`button is-small is-rounded ${styles.wishlistButton}`}
-                onClick={handleWishlistClick}
-                aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-                aria-pressed={inWishlist}
+                className={`button is-fullwidth ${
+                  isInWatchlist(movie.id) ? 'is-danger' : 'is-light'
+                }`}
+                onClick={e => {
+                  e.stopPropagation();
+                  toggleWatchlist(movie.id);
+                }}
+                title={isInWatchlist(movie.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
               >
-                <span className={`icon ${inWishlist ? 'has-text-danger' : 'has-text-grey'}`}>
-                  <i className={inWishlist ? 'fas fa-heart' : 'far fa-heart'} />
+                <span className="icon">
+                  <i className={`fas fa-heart${isInWatchlist(movie.id) ? '' : '-o'}`}></i>
+                </span>
+                <span className="is-hidden-mobile">
+                  {isInWatchlist(movie.id) ? 'In Watchlist' : 'Add to Watchlist'}
                 </span>
               </button>
-            )} */}
+            </div>
           </div>
         </div>
       </div>

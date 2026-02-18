@@ -76,3 +76,16 @@
   z-index: 3;
   pointer-events: auto;
 }
+.cardFooter {
+  padding: 0.75rem;
+  border-top: 1px solid #dbdbdb;
+  
+  button {
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}

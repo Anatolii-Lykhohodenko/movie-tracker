@@ -7,8 +7,10 @@ import { PLACEHOLDER_POSTER } from '../../components/constants/images';
 import { TMDB_IMAGE_SIZES } from '../../components/constants/images';
 import { MovieList } from '../MovieList';
 import './MovieDetail.css';
+import { useWatchListContext } from '../../contexts/WatchListContext';
 
 export const MovieDetail: React.FC = () => {
+  const { isInWatchlist, toggleWatchlist } = useWatchListContext();
   const { id } = useParams();
   const movieId = Number(id);
   const isValidId = Number.isFinite(movieId) && movieId > 0;
@@ -49,7 +51,7 @@ export const MovieDetail: React.FC = () => {
     );
   }
 
-  const { movie, recommendations, credits } = data;
+  const { movie, similar, credits } = data;
 
   if (!movie) return null;
 
@@ -185,11 +187,18 @@ export const MovieDetail: React.FC = () => {
 
               {/* Watchlist Button */}
               <div className="mt-5">
-                <button className="button is-primary is-large" disabled title="Coming soon">
+                <button
+                  className={`button is-large ${
+                    isInWatchlist(movie.id) ? 'is-danger' : 'is-primary'
+                  }`}
+                  onClick={() => toggleWatchlist(movie.id)}
+                >
                   <span className="icon">
-                    <i className="fas fa-heart"></i>
+                    <i className={`fas fa-heart${isInWatchlist(movie.id) ? '' : '-o'}`}></i>
                   </span>
-                  <span>Add to Watchlist</span>
+                  <span>
+                    {isInWatchlist(movie.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                  </span>
                 </button>
               </div>
             </div>
@@ -235,11 +244,11 @@ export const MovieDetail: React.FC = () => {
         </section>
       )}
       {/* ========== RECOMMENDATIONS SECTION ========== */}
-      {recommendations?.results && recommendations.results.length > 0 && (
+      {similar?.results && similar.results.length > 0 && (
         <section className="section recommendations-section">
           <div className="container">
             <h2 className="title is-4 mb-5 has-text-black">You might also like</h2>
-            <MovieList movies={recommendations.results} />
+            <MovieList movies={similar.results} />
           </div>
         </section>
       )}
