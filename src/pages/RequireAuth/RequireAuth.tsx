@@ -1,11 +1,13 @@
 import type React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuthContext } from '../../contexts/AuthContext';
 
 export const RequireAuth: React.FC = () => {
-  const isAuth = false;
+  const { isAuthenticated } = useAuthContext();
+  const location = useLocation();
 
-  if (!isAuth) {
-    return <Navigate to="/login" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

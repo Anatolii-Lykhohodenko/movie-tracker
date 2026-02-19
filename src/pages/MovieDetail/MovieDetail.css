@@ -156,5 +156,26 @@
 .cast-full-section {
   padding-top: 2rem;
   padding-bottom: 2rem;
-  background-color: #fafafa; /* Лёгкий серый фон */
+  background-color: #fafafa;
 }
+
+.watchlist-button-wrapper {
+  margin-top: 1.75rem;
+}
+
+@media screen and (max-width: 768px) {
+  .watchlist-button-wrapper {
+    margin-top: 1.25rem;
+    text-align: center;
+  }
+
+  .watchlist-button-wrapper .button.is-large {
+    width: 100%;
+    font-size: 1rem;
+  }
+}
+
+.movie-detail-page .columns .column:last-child {
+  max-width: 640px;
+}
+

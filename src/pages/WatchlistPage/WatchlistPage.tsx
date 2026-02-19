@@ -1,6 +1,5 @@
 import type React from 'react';
 import { Link } from 'react-router-dom';
-// import { MovieList } from '../../components/MovieList';
 import { Loader } from '../../components/Loader';
 import './WatchlistPage.css';
 import { EmptyState } from '../../components/EmplyState';
@@ -13,7 +12,7 @@ export const WatchlistPage: React.FC = () => {
   const { watchListMovieIds, clearWatchList } = useWatchListContext();
   const movieQueries = useQueries({
     queries: watchListMovieIds.map(movieId => ({
-      queryKey: ['movie', movieId],
+      queryKey: ['watchListMovie', movieId],
       queryFn: () => getMovieById(movieId),
     })),
   });
@@ -54,10 +53,10 @@ export const WatchlistPage: React.FC = () => {
                       <span className="icon has-text-danger">
                         <i className="fas fa-heart fa-lg"></i>
                       </span>
-                      <span>My Watchlist</span>
+                      <span className='has-text-dark'>My Watchlist</span>
                     </span>
                   </h1>
-                  <p className="subtitle is-5 has-text-grey-light">
+                  <p className="subtitle is-5 has-text-grey-dark">
                     {movies.length} {movies.length === 1 ? 'movie' : 'movies'} saved
                   </p>
                 </div>

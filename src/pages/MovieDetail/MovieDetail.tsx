@@ -15,11 +15,7 @@ export const MovieDetail: React.FC = () => {
   const movieId = Number(id);
   const isValidId = Number.isFinite(movieId) && movieId > 0;
 
-  const {
-    data,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['movie', movieId],
     queryFn: () => getMovieInfoById(movieId),
     enabled: isValidId,
@@ -55,8 +51,8 @@ export const MovieDetail: React.FC = () => {
 
   if (!movie) return null;
 
-  const backdropUrl = movie.backdrop_path 
-    ? `${TMDB_IMAGE_SIZES.backdrop.large}${movie.backdrop_path}` 
+  const backdropUrl = movie.backdrop_path
+    ? `${TMDB_IMAGE_SIZES.backdrop.large}${movie.backdrop_path}`
     : null;
 
   const posterUrl = movie.poster_path
@@ -165,28 +161,28 @@ export const MovieDetail: React.FC = () => {
                           : 'Not rated yet'}
                       </td>
                     </tr>
-                    {movie.budget && movie.budget > 0 && (
+                    {movie.budget && movie.budget > 0 ? (
                       <tr>
                         <td>
                           <strong>Budget</strong>
                         </td>
                         <td>${movie.budget.toLocaleString()}</td>
                       </tr>
-                    )}
-                    {movie.revenue && movie.revenue > 0 && (
+                    ) : null}
+                    {movie.revenue && movie.revenue > 0 ? (
                       <tr>
                         <td>
                           <strong>Revenue</strong>
                         </td>
                         <td>${movie.revenue.toLocaleString()}</td>
                       </tr>
-                    )}
+                    ) : null}
                   </tbody>
                 </table>
               </div>
 
               {/* Watchlist Button */}
-              <div className="mt-5">
+              <div className="watchlist-button-wrapper">
                 <button
                   className={`button is-large ${
                     isInWatchlist(movie.id) ? 'is-danger' : 'is-primary'

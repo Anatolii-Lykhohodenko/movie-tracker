@@ -77,11 +77,11 @@
   pointer-events: auto;
 }
 .cardFooter {
-  padding: 0.75rem;
-  border-top: 1px solid #dbdbdb;
+  padding: 0.75rem 0;
   
   button {
     transition: all 0.2s ease;
+    width: 100%;
     
     &:hover {
       transform: translateY(-2px);
@@ -89,3 +89,5 @@
     }
   }
 }
+
+

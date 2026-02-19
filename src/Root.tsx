@@ -19,7 +19,7 @@ export const Root = () => (
         <Route path="movie/:id" element={<MovieDetail />}></Route>
         <Route 
           path="watchlist" 
-          // element={<RequireAuth />}
+          element={<RequireAuth />}
         >
           <Route index element={<WatchlistPage />} />
         </Route>
