@@ -7,6 +7,7 @@ import { WatchlistPage } from './pages/WatchlistPage';
 import { Profile } from './pages/Profile';
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage';
 import { RequireAuth } from './pages/RequireAuth';
+import { RegisterPage } from './pages/RegisterPage';
 
 export const Root = () => (
   <Router>
@@ -15,12 +16,9 @@ export const Root = () => (
         <Route index element={<HomePage />}></Route>
         <Route path="/home" element={<Navigate to="/" replace />}></Route>
         <Route path="login" element={<AuthPage />}></Route>
-        <Route path="register" element={<AuthPage />}></Route>
+        <Route path="register" element={<RegisterPage />}></Route>
         <Route path="movie/:id" element={<MovieDetail />}></Route>
-        <Route 
-          path="watchlist" 
-          element={<RequireAuth />}
-        >
+        <Route path="watchlist" element={<RequireAuth />}>
           <Route index element={<WatchlistPage />} />
         </Route>
         <Route path="profile" element={<RequireAuth />}>

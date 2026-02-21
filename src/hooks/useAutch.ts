@@ -1,30 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-
-interface User {
-  id: string;
-  email: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (email: string, password: string) => Promise<void>;
-}
+import type { AuthContextType, User } from "../types/auth";
 
 export const useAuth = (): AuthContextType => {
   const [user, setUser] = useState<User | null>(getUser());
   const [token, setToken] = useState<string | null>(getToken());
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    const savedToken = localStorage.getItem('token');
-
-    if (savedUser) setUser(JSON.parse(savedUser));
-    if (savedToken) setToken(savedToken);
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -92,9 +71,9 @@ const getUser = (): User | null=> {
 const getToken = (): string | null=> {
   try {
     const saved = localStorage.getItem('token');
-    return saved ? JSON.parse(saved) : null;
+    return saved || null;
   } catch (error) {
-    console.error('Failed to parse user:', error);
+    console.error('Failed to parse token:', error);
     return null;
   }
 };

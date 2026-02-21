@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 import './AuthPage.css';
 
@@ -12,6 +12,7 @@ export const AuthPage: React.FC = () => {
 
   const { login } = useAuthContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ export const AuthPage: React.FC = () => {
 
     try {
       await login(email, password);
-      navigate('/');
+      navigate(location.state?.from?.pathname ?? '/');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -37,14 +38,14 @@ export const AuthPage: React.FC = () => {
 
           {error && (
             <div className="notification is-danger">
-              <button className="delete"></button>
+              <button className="delete" onClick={() => setError('')}></button>
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
             <div className="field">
-              <label className="label">Email</label>
+              <label className="label has-text-grey">Email</label>
               <div className="control has-icons-left">
                 <input
                   className={`input ${error ? 'is-danger' : ''}`}
@@ -61,7 +62,7 @@ export const AuthPage: React.FC = () => {
             </div>
 
             <div className="field">
-              <label className="label">Password</label>
+              <label className="label has-text-grey">Password</label>
               <div className="control has-icons-left">
                 <input
                   className={`input ${error ? 'is-danger' : ''}`}
@@ -99,14 +100,14 @@ export const AuthPage: React.FC = () => {
             <span>or</span>
           </div>
 
-          <Link to="/register" className="button is-text is-fullwidth">
+          <Link to="/register" state={location.state} className="button is-text is-fullwidth">
             Create new account
           </Link>
 
           <div className="auth-footer">
             <p className="has-text-centered">
               Don't have an account?{' '}
-              <Link to="/register" className="has-text-primary">
+              <Link to="/register" state={location.state} className="has-text-primary">
                 Sign up
               </Link>
             </p>

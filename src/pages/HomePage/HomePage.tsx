@@ -37,7 +37,6 @@ export const HomePage: React.FC = () => {
 
   return (
     <>
-      <p>HomePage</p>
       <SearchBar onSearch={handleSearchQuery} />
       <MovieList movies={data?.results || []} />
     </>

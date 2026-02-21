@@ -1,4 +1,3 @@
-/* Общие стили для Login/Register */
 .auth-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -63,6 +62,27 @@
   position: relative;
 }
 
+.control .icon.is-small.is-left {
+  position: absolute !important;
+  left: 1rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #9ca3af !important;
+  transition: color 0.2s ease !important;
+  width: auto !important;
+  height: auto !important;
+  font-size: 1rem !important;
+}
+
+.input:focus + .icon.is-small.is-left {
+  color: #667eea !important;
+}
+
+.input.is-danger + .icon.is-small.is-left {
+  color: #ef4444 !important;
+}
+
+
 .input {
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
@@ -82,14 +102,6 @@
 
 .input.is-danger {
   border-color: #ef4444;
-}
-
-.icon.is-left {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ca3af;
 }
 
 .button {
