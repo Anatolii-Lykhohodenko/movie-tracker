@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useSearchParams } from 'react-router-dom';
 
@@ -10,6 +10,10 @@ type Props = {
 export const SearchBar: React.FC<Props> = ({ onSearch }) => {
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('query') || '');
+
+  useEffect(() => {
+    setQuery(searchParams.get('query') || '');
+  }, [searchParams]);
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();

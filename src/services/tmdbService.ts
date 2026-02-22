@@ -21,12 +21,15 @@ const fetchTMDB = async <T>(endpoint: string, params: Record<string, string> = {
   return response.json();
 };
 
-export const getPopularMovies = (): Promise<TMDBResponse> => {
-  return fetchTMDB<TMDBResponse>('/movie/popular');
+export const getPopularMovies = ({ page } : { page: string}): Promise<TMDBResponse> => {
+  return fetchTMDB<TMDBResponse>('/movie/popular', { page });
 };
 
-export const getMoviesByQuery = (query: string): Promise<TMDBResponse> => {
-  return fetchTMDB<TMDBResponse>('/search/movie', { query });
+export const getMoviesByQuery = ({ query, page } : {query: string, page: string}): Promise<TMDBResponse> => {
+  return fetchTMDB<TMDBResponse>('/search/movie', {
+    query,
+    page,
+  });
 };
 
 export const getMovieById = (id: number): Promise<MovieListItem> => {
