@@ -1,30 +1,36 @@
 import type React from 'react';
-import { SearchBar } from '../../components/SearchBar';
 import { useInfiniteQuery, type InfiniteData, type QueryKey } from '@tanstack/react-query';
-import { getMoviesByQuery, getPopularMovies } from '../../services/tmdbService';
+import { getMoviesWithFilters, getPopularMovies } from '../../services/tmdbService';
 import { MovieList } from '../MovieList';
-import { useSearchParams } from 'react-router-dom';
 import { Loader } from '../../components/Loader';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { type TMDBResponse } from '../../types/tmbd';
 import './HomePage.css';
+import { useFilterContext } from '../../contexts/FilterContext';
+import equal from 'fast-deep-equal';
+import { defaultFilters } from '../../components/constants/filters';
 
 export const HomePage: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const queryParam = searchParams.get('query') || '';
+  const { filters } = useFilterContext();
+
+  const isDefaultFilters = useMemo(() => equal(filters, defaultFilters), [filters]);
+  const queryKey = useMemo(
+    () => (isDefaultFilters ? 'popular' : JSON.stringify(filters)),
+    [filters, isDefaultFilters],
+  );
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
     useInfiniteQuery<TMDBResponse, Error, InfiniteData<TMDBResponse>, QueryKey, number>({
-      queryKey: ['movies', queryParam || 'popular'],
+      queryKey: ['movies', queryKey],
       initialPageParam: 1,
       getNextPageParam: (lastPage: TMDBResponse) =>
         lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
       queryFn: ({ pageParam }) =>
-        queryParam
-          ? getMoviesByQuery({ query: queryParam, page: pageParam.toString() })
-          : getPopularMovies({ page: pageParam.toString() }),
+        isDefaultFilters
+          ? getPopularMovies({ page: pageParam.toString() })
+          : getMoviesWithFilters({ filters, page: pageParam.toString() }),
     });
 
   useEffect(() => {
@@ -52,13 +58,6 @@ export const HomePage: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSearchQuery = (query: string) => {
-    if (query) {
-      setSearchParams({ query });
-    } else {
-      setSearchParams({});
-    }
-  };
 
   if (isLoading) {
     return <Loader />;
@@ -76,8 +75,14 @@ export const HomePage: React.FC = () => {
 
   return (
     <>
-      <SearchBar onSearch={handleSearchQuery} />
-      <MovieList movies={movies} />
+      {movies.length === 0 && !isLoading ? (
+        <div className="has-text-centered has-text-grey py-6">
+          <p className="is-size-4">🎬 No movies found</p>
+          <p className="is-size-6 mt-2">Try adjusting your filters</p>
+        </div>
+      ) : (
+        <MovieList movies={movies} />
+      )}
 
       <div ref={sentinelRef} style={{ height: '1px' }} />
 

@@ -91,7 +91,7 @@ export const MovieDetail: React.FC = () => {
                 <span className="tag is-warning is-light">⭐ {movie.vote_average.toFixed(1)}</span>
               )}
 
-              {movie.runtime && (
+              {!!movie.runtime && (
                 <span className="tag is-info is-light">⏱️ {movie.runtime} min</span>
               )}
 

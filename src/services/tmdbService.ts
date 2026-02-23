@@ -1,4 +1,11 @@
-import type { Credits, MovieDetail, MovieInfo, MovieListItem, TMDBResponse } from '../types/tmbd';
+import type {
+  Credits,
+  Filters,
+  MovieDetail,
+  MovieInfo,
+  MovieListItem,
+  TMDBResponse,
+} from '../types/tmbd';
 
 const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -21,11 +28,17 @@ const fetchTMDB = async <T>(endpoint: string, params: Record<string, string> = {
   return response.json();
 };
 
-export const getPopularMovies = ({ page } : { page: string}): Promise<TMDBResponse> => {
+export const getPopularMovies = ({ page }: { page: string }): Promise<TMDBResponse> => {
   return fetchTMDB<TMDBResponse>('/movie/popular', { page });
 };
 
-export const getMoviesByQuery = ({ query, page } : {query: string, page: string}): Promise<TMDBResponse> => {
+export const getMoviesByQuery = ({
+  query,
+  page,
+}: {
+  query: string;
+  page: string;
+}): Promise<TMDBResponse> => {
   return fetchTMDB<TMDBResponse>('/search/movie', {
     query,
     page,
@@ -44,4 +57,39 @@ export const getMovieInfoById = async (id: number): Promise<MovieInfo> => {
   ]);
 
   return { movie, similar, credits };
+};
+
+export const getMoviesWithFilters = ({
+  filters,
+  page,
+}: {
+  filters: Filters;
+  page: string;
+}): Promise<TMDBResponse> => {
+
+const preparedFilters = Object.entries(filters).reduce(
+  (acc, [key, value]) => {
+    if (!value) return acc;
+
+    switch (key as keyof Filters) {
+      case 'query':
+        return { ...acc, query: value };
+      case 'genre':
+        return { ...acc, with_genres: value };
+      case 'sortBy':
+        return { ...acc, sort_by: value };
+      case 'rating':
+        return { ...acc, 'vote_average.gte': value, 'vote_count.gte': '100'  };
+      default:
+        return acc;
+    }
+  },
+  {} as Record<string, string>,
+);
+
+
+  return fetchTMDB<TMDBResponse>('/discover/movie', {
+    ...preparedFilters,
+    page,
+  });
 };

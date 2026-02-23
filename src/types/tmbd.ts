@@ -56,3 +56,10 @@ export interface TMDBResponse {
   total_pages: number;
   total_results: number;
 }
+export interface Filters {
+  query: string;
+  genre: string;
+  sortBy: string;
+  rating: string;
+}
+

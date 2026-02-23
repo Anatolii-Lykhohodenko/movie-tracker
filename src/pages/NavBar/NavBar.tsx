@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './NavBar.css';
 import { useWatchListContext } from '../../contexts/WatchListContext';
 import { useAuthContext } from '../../contexts/AuthContext';
+import { useFilterContext } from '../../contexts/FilterContext';
 
 export const NavBar: React.FC = () => {
   const navigate = useNavigate();
@@ -10,11 +11,13 @@ export const NavBar: React.FC = () => {
   const location = useLocation();
   const isAuthPage = ['/login', '/register'].includes(location.pathname);
   const { isAuthenticated, logout } = useAuthContext();
+  const { toggleSidebar } = useFilterContext();
+  const { resetFilters } = useFilterContext();
 
   return (
     <nav className="navbar">
       <div className="navbar-menu">
-        <Link to="/" className="navbar-brand">
+        <Link to="/" className="navbar-brand" onClick={resetFilters}>
           🎬 MOVIETON
         </Link>
         <div className="navbar-end">
@@ -54,6 +57,9 @@ export const NavBar: React.FC = () => {
               )}
             </Link>
           )}
+          <button className="button is-light sidebar-toggle" onClick={toggleSidebar}>
+            <i className="fas fa-sliders-h" />
+          </button>
         </div>
       </div>
     </nav>

@@ -6,6 +6,7 @@ import 'bulma/css/bulma.min.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WatchListProvider } from './contexts/WatchListContext';
 import { AuthProvider } from './contexts/AuthContext.tsx';
+import { FilterProvider } from './contexts/FilterContext.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,7 +22,9 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <WatchListProvider>
+          <FilterProvider>
           <Root />
+          </FilterProvider>
         </WatchListProvider>
       </AuthProvider>
     </QueryClientProvider>
