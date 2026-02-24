@@ -73,7 +73,7 @@ const preparedFilters = Object.entries(filters).reduce(
 
     switch (key as keyof Filters) {
       case 'query':
-        return { ...acc, query: value };
+        return { ...acc, with_text_query: value };
       case 'genre':
         return { ...acc, with_genres: value };
       case 'sortBy':
@@ -90,6 +90,7 @@ const preparedFilters = Object.entries(filters).reduce(
 
   return fetchTMDB<TMDBResponse>('/discover/movie', {
     ...preparedFilters,
+    include_adult: 'false',
     page,
   });
 };
