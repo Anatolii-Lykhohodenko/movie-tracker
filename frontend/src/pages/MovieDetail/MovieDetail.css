@@ -33,11 +33,40 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-@media screen and (max-width: 768px) {
-  .movie-poster {
-    max-width: 300px;
-    margin: 0 auto;
-  }
+/* ── Details Table ── */
+.movie-detail-page .table {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.movie-detail-page .table td,
+.movie-detail-page .table th {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.movie-detail-page .table.is-striped tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.movie-detail-page .table.is-striped tbody tr:nth-child(odd) {
+  background: transparent !important;
+}
+
+/* ── Watchlist Button ── */
+.watchlist-button-wrapper {
+  margin-top: 1.75rem;
+}
+
+.movie-detail-page .columns .column:last-child {
+  max-width: 640px;
+}
+
+/* ── Cast Section ── */
+.cast-full-section {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  background-color: transparent;
 }
 
 .cast-scroll-container {
@@ -46,7 +75,7 @@
   overflow-x: auto;
   padding: 1rem 0;
   scrollbar-width: thin;
-  scrollbar-color: #dbdbdb #f5f5f5;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 .cast-scroll-container::-webkit-scrollbar {
@@ -54,26 +83,27 @@
 }
 
 .cast-scroll-container::-webkit-scrollbar-track {
-  background: #f5f5f5;
+  background: transparent;
   border-radius: 4px;
 }
 
 .cast-scroll-container::-webkit-scrollbar-thumb {
-  background: #dbdbdb;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
 
 .cast-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #b5b5b5;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .cast-card {
   flex: 0 0 140px;
   width: 140px;
   text-align: center;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
@@ -81,14 +111,14 @@
 
 .cast-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
 .cast-avatar {
   width: 140px;
   height: 210px;
   overflow: hidden;
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .cast-avatar img {
@@ -111,10 +141,9 @@
   user-select: none;
 }
 
-/* Cast Info */
 .cast-info {
   padding: 0.75rem 0.5rem;
-  background: #fff;
+  background: transparent;
 }
 
 .cast-name {
@@ -122,7 +151,7 @@
   font-size: 0.875rem;
   line-height: 1.2;
   margin-bottom: 0.25rem;
-  color: #363636;
+  color: rgba(255, 255, 255, 0.85);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -131,39 +160,34 @@
 .cast-character {
   font-size: 0.75rem;
   line-height: 1.2;
-  color: #7a7a7a;
+  color: rgba(255, 255, 255, 0.45);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* ── Recommendations Section ── */
 .recommendations-section {
-  background-color: #f5f5f5;
+  background-color: transparent;
   padding-top: 3rem;
   padding-bottom: 3rem;
 }
 
+/* ── Responsive ── */
 @media screen and (max-width: 768px) {
+  .movie-poster {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
   .movie-hero .title.is-1 {
     font-size: 2rem;
   }
-  
+
   .movie-hero .subtitle.is-4 {
     font-size: 1.25rem;
   }
-}
 
-.cast-full-section {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-  background-color: #fafafa;
-}
-
-.watchlist-button-wrapper {
-  margin-top: 1.75rem;
-}
-
-@media screen and (max-width: 768px) {
   .watchlist-button-wrapper {
     margin-top: 1.25rem;
     text-align: center;
@@ -174,8 +198,3 @@
     font-size: 1rem;
   }
 }
-
-.movie-detail-page .columns .column:last-child {
-  max-width: 640px;
-}
-

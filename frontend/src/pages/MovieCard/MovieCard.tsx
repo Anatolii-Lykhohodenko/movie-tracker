@@ -64,18 +64,13 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
             )}
             <div className={styles.cardFooter}>
               <button
-                className={`button is-fullwidth ${
-                  isInWatchlist(movie.id) ? 'is-danger' : 'is-light'
-                }`}
+                className={`button ${isInWatchlist(movie.id) ? 'is-danger' : 'is-light'}`}
                 onClick={e => {
                   e.stopPropagation();
                   toggleWatchlist(movie.id);
                 }}
                 title={isInWatchlist(movie.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
               >
-                <span className="icon">
-                  <i className={`fas fa-heart${isInWatchlist(movie.id) ? '' : '-o'}`}></i>
-                </span>
                 <span className="is-hidden-mobile">
                   {isInWatchlist(movie.id) ? 'In Watchlist' : 'Add to Watchlist'}
                 </span>

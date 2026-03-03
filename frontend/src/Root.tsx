@@ -4,7 +4,7 @@ import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
 import { MovieDetail } from './pages/MovieDetail';
 import { WatchlistPage } from './pages/WatchlistPage';
-import { Profile } from './pages/Profile';
+import { ProfilePage } from './pages/ProfilePage';
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage';
 import { RequireAuth } from './pages/RequireAuth';
 import { RegisterPage } from './pages/RegisterPage';
@@ -22,7 +22,7 @@ export const Root = () => (
           <Route index element={<WatchlistPage />} />
         </Route>
         <Route path="profile" element={<RequireAuth />}>
-          <Route index element={<Profile />}></Route>
+          <Route index element={<ProfilePage />}></Route>
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

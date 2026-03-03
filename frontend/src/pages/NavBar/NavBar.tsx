@@ -13,6 +13,8 @@ export const NavBar: React.FC = () => {
   const { isAuthenticated, logout } = useAuthContext();
   const { toggleSidebar } = useFilterContext();
   const { resetFilters } = useFilterContext();
+  const { pathname } = useLocation();
+  const showFilter = ['/', '/watchlist'].includes(pathname);
 
   return (
     <nav className="navbar">
@@ -57,9 +59,19 @@ export const NavBar: React.FC = () => {
               )}
             </Link>
           )}
-          <button className="button is-light sidebar-toggle" onClick={toggleSidebar}>
-            <i className="fas fa-sliders-h" />
-          </button>
+          {showFilter && (
+            <button className="button is-light sidebar-toggle" onClick={toggleSidebar}>
+              <i className="fas fa-sliders-h" />
+            </button>
+          )}
+          {isAuthenticated && (
+            <Link to="/profile" className="navbar-item">
+              <span className="icon">
+                <i className="fas fa-user"></i>
+              </span>
+              <span className="is-hidden-mobile">Profile</span>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

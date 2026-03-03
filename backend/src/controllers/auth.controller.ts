@@ -2,21 +2,26 @@ import { Request, Response } from 'express';
 import prisma from '../prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { loginSchema, registerSchema } from '../schemas/auth.schema';
+import {
+  loginSchema,
+  registerSchema,
+  updatePasswordSchema,
+  updateProfileSchema,
+} from '../schemas/auth.schema';
 
 export const register = async (req: Request, res: Response) => {
   try {
     const result = registerSchema.safeParse(req.body);
 
     if (!result.success) {
-      return res.status(400).json({ error: result.error.message });
+      return res.status(400).json({ error: result.error.issues[0].message });
     }
     const { email, password, name } = result.data;
 
     const isUserExist = await prisma.user.findUnique({ where: { email } });
 
     if (isUserExist) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ error: 'User already exists' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
@@ -45,7 +50,7 @@ export const login = async (req: Request, res: Response) => {
     const result = loginSchema.safeParse(req.body);
 
     if (!result.success) {
-      return res.status(400).json({ err: result.error.message });
+      return res.status(400).json({ error: result.error.issues[0].message });
     }
 
     const { email, password } = result.data;
@@ -78,17 +83,89 @@ export const login = async (req: Request, res: Response) => {
 export const me = async (req: Request, res: Response) => {
   try {
     const { userId } = req.user!;
-    const userData = await prisma.user.findUnique({ where: { id: userId } });
+    const userData = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        birthDate: true,
+        createdAt: true,
+      },
+    });
 
     if (!userData) {
-      return res.status(401).json({ error: 'User does not exist' });
+      return res.status(404).json({ error: 'User does not exist' });
     }
 
-    const { password, ...userWithoutPassword } = userData;
-    
-    return res.status(200).json({ user: userWithoutPassword });
+    return res.status(200).json({ user: userData });
   } catch (err: unknown) {
-    const error = err instanceof Error ? err.message : 'Server error'
-    return res.status(500).json({ error })
+    const error = err instanceof Error ? err.message : 'Server error';
+    return res.status(500).json({ error });
+  }
+};
+
+export const updateProfile = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.user!;
+    const result = updateProfileSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({ error: result.error.issues[0].message });
+    }
+
+    const dataToChange = result.data;
+
+    const newUserData = await prisma.user.update({
+      where: { id: userId },
+      data: dataToChange,
+    });
+
+    const { password, ...userData } = newUserData;
+
+    return res.status(200).json({ user: userData });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : 'Server error';
+    return res.status(500).json({ error });
+  }
+};
+
+export const updatePassword = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.user!;
+    const result = updatePasswordSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({ error: result.error.issues[0].message });
+    }
+
+    const { oldPassword, newPassword } = result.data;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User does not exist' });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ error: 'Wrong credentials' });
+    }
+
+    const password = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password }
+    });
+
+    return res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : 'Server error';
+    return res.status(500).json({ error });
   }
 };

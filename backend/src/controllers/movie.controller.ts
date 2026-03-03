@@ -20,6 +20,23 @@ export const getWatchlist = async (req: Request, res: Response) => {
   }
 };
 
+export const clearWatchlist = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.user!;
+
+    await prisma.userMovie.updateMany({
+      where: { userId, inWatchlist: true },
+      data: { inWatchlist: false },
+    });
+
+    return res.status(200).json({ message: 'WatchList cleared successfully' });
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Server error';
+
+    return res.status(500).json({ error });
+  }
+};
+
 export const toggleWatchlist = async (req: Request, res: Response) => {
   try {
     const { userId } = req.user!;
@@ -102,7 +119,7 @@ export const rateMovie = async (req: Request, res: Response) => {
     const result = ratingSchema.safeParse(req.body)!;
 
     if (!result.success) {
-      return res.status(400).json({ error: result.error.message });
+      return res.status(400).json({ error: result.error.issues[0].message });
     }
 
     const { rating } = result.data;
@@ -131,12 +148,15 @@ export const getMovieRate = async (req: Request, res: Response) => {
 
     const ratings = await prisma.userMovie.findMany({
       select: { rating: true },
-      where: { movieId },
+      where: { movieId, rating: { not: null } },
     });
 
-    const ratingValues = ratings.map(r => r.rating);
+    const ratingValues = ratings.map(r => r.rating as number);
 
-    return res.status(200).json({ ratings: ratingValues });
+    const avg = ratingValues.length
+      ? +(ratingValues.reduce((acc, cur) => (acc + cur), 0) / ratingValues.length).toFixed(1)
+      : null;
+    return res.status(200).json({ rating: avg });
   } catch (err) {
     const error = err instanceof Error ? err.message : 'Server error';
 

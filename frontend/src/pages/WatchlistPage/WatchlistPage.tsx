@@ -16,10 +16,14 @@ export const WatchlistPage: React.FC = () => {
       queryFn: () => getMovieById(movieId),
     })),
   });
-  
+
   const isLoading = movieQueries.some(q => q.isLoading);
   const movies = movieQueries.filter(q => q.isSuccess).map(q => q.data!);
 
+  // ========== LOADING STATE ==========
+  if (isLoading) {
+    return <Loader fullscreen />;
+  }
 
   // ========== EMPTY STATE ==========
   if (watchListMovieIds.length === 0) {
@@ -32,11 +36,6 @@ export const WatchlistPage: React.FC = () => {
         actionLink="/"
       />
     );
-  }
-
-  // ========== LOADING STATE ==========
-  if (isLoading) {
-    return <Loader fullscreen />;
   }
 
   // ========== MAIN CONTENT ==========
@@ -53,7 +52,7 @@ export const WatchlistPage: React.FC = () => {
                       <span className="icon has-text-danger">
                         <i className="fas fa-heart fa-lg"></i>
                       </span>
-                      <span className='has-text-dark'>My Watchlist</span>
+                      <span className="has-text-grey" style={{ paddingLeft: '10px' }}>My Watchlist</span>
                     </span>
                   </h1>
                   <p className="subtitle is-5 has-text-grey-dark">
@@ -70,7 +69,7 @@ export const WatchlistPage: React.FC = () => {
                   <button
                     className="button is-outlined is-danger"
                     onClick={() => {
-                        clearWatchList();
+                      clearWatchList();
                     }}
                   >
                     <span className="icon">

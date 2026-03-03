@@ -1,41 +1,60 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+import api from '../services/api';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 
 interface UseWatchListReturn {
   watchListMovieIds: number[];
   toggleWatchlist: (id: number) => void;
   isInWatchlist: (id: number) => boolean;
-  clearWatchList: () => void;
+  clearWatchList: () => Promise<void>;
 }
 export const useWatchList = (): UseWatchListReturn => {
-  const [watchListMovieIds, setWatchListMovieIds] = useState<number[]>(getNormalizeMovieIds());
+  const queryClient = useQueryClient();
 
-  const toggleWatchlist = useCallback((id: number) => {
-    setWatchListMovieIds(prev => {
-      const newList = prev.includes(id) ? prev.filter(movieId => movieId !== id) : [...prev, id];
+  const { data: watchListMovieIds = [] } = useQuery({
+    queryKey: ['watchlist'],
+    queryFn: async () => {
+      try {
+        const { data } = await api.get('/movies/watchlist');
+        return data.movieIds as number[];
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          throw new Error(err.response?.data?.error ?? 'Login failed');
+        }
+        throw err;
+      }
+    },
+  });
 
-      localStorage.setItem('watchlist', JSON.stringify(newList));
-      return newList;
-    });
-  }, []);
+  const toggleWatchlist = useCallback(
+    async (id: number) => {
+      try {
+        await api.post(`/movies/${id}/watchlist`);
+        queryClient.invalidateQueries({ queryKey: ['watchlist'] });
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          throw new Error(err.response?.data?.error ?? 'Login failed');
+        }
+        throw err;
+      }
+    },
+    [queryClient],
+  );
 
-  const isInWatchlist = (id: number) => {
-    return watchListMovieIds.includes(id);
-  };
+  const isInWatchlist = (id: number) => watchListMovieIds.includes(id);
 
-  const clearWatchList = () => {
-    setWatchListMovieIds([]);
-    localStorage.setItem('watchlist', JSON.stringify([]));
-  };
+  const clearWatchList = useCallback(async () => {
+    try {
+      await api.delete('/movies/watchlist');
+      queryClient.setQueryData(['watchlist'], []);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        throw new Error(err.response?.data?.error ?? 'Login failed');
+      }
+      throw err;
+    }
+  }, [queryClient]);
 
   return { watchListMovieIds, toggleWatchlist, isInWatchlist, clearWatchList };
-};
-
-const getNormalizeMovieIds = (): number[] => {
-  try {
-    const saved = localStorage.getItem('watchlist');
-    return saved ? JSON.parse(saved) : [];
-  } catch (error) {
-    console.error('Failed to parse watchlist:', error);
-    return [];
-  }
 };

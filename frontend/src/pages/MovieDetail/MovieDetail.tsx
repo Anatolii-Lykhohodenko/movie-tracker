@@ -190,7 +190,7 @@ export const MovieDetail: React.FC = () => {
                   onClick={() => toggleWatchlist(movie.id)}
                 >
                   <span className="icon">
-                    <i className={`fas fa-heart${isInWatchlist(movie.id) ? '' : '-o'}`}></i>
+                    <i className={`fas fa-heart`}></i>
                   </span>
                   <span>
                     {isInWatchlist(movie.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
@@ -243,7 +243,7 @@ export const MovieDetail: React.FC = () => {
       {similar?.results && similar.results.length > 0 && (
         <section className="section recommendations-section">
           <div className="container">
-            <h2 className="title is-4 mb-5 has-text-black">You might also like</h2>
+            <h2 className="title is-4 mb-5 has-text-grey">You might also like</h2>
             <MovieList movies={similar.results} />
           </div>
         </section>

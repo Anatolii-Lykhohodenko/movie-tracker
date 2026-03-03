@@ -1,6 +1,9 @@
 export interface User {
-  id: string;
+  id: number;
   email: string;
+  name: string;
+  birthDate: string | null;
+  createdAt: string;
 }
 
 export interface AuthContextType {
@@ -9,5 +12,6 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
+  setUser: (user: User) => void
 }

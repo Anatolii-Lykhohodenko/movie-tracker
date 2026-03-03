@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import type { AuthContextType, User } from "../types/auth";
+import { useCallback, useEffect, useState } from 'react';
+import type { AuthContextType, User } from '../types/auth';
+import api from '../services/api';
+import axios from 'axios';
 
 export const useAuth = (): AuthContextType => {
   const [user, setUser] = useState<User | null>(getUser());
@@ -21,32 +23,48 @@ export const useAuth = (): AuthContextType => {
     }
   }, [token]);
 
-const login = useCallback(async (email: string, password: string) => {
-  if (!email || !password) {
-    throw new Error('Email and password required');
-  }
+  const login = useCallback(async (email: string, password: string) => {
+    if (!email || !password) {
+      throw new Error('Email, password and name required');
+    }
 
-  await new Promise(r => setTimeout(r, 1000));
+    try {
+      const { data } = await api.post('/auth/login', { email, password });
+      const { user, token }: { user: User; token: string } = data;
 
-  const mockToken = `mock-jwt-${Date.now()}`;
-  const mockUser: User = { id: '1', email };
+      setToken(token);
+      setUser(user);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        throw new Error(err.response?.data?.error ?? 'Login failed');
+      }
+      throw err;
+    }
+  }, []);
 
-  setToken(mockToken);
-  setUser(mockUser);
-}, []);
+  const logout = useCallback(() => {
+    setUser(null);
+    setToken(null);
+  }, []);
 
-const logout = useCallback(() => {
-  setUser(null);
-  setToken(null);
-}, []);
+  const register = useCallback(async (email: string, password: string, name: string) => {
+    if (!email || !password || !name) {
+      throw new Error('Email, password and name are required');
+    }
 
-const register = useCallback(
-  async (email: string, password: string) => {
-    await login(email, password);
-  },
-  [login],
-);
+    try {
+      const { data } = await api.post('/auth/register', { email, password, name });
+      const { user, token }: { user: User; token: string } = data;
 
+      setToken(token);
+      setUser(user);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        throw new Error(err.response?.data?.error ?? 'Login failed');
+      }
+      throw err;
+    }
+  }, []);
 
   return {
     user,
@@ -55,25 +73,24 @@ const register = useCallback(
     login,
     logout,
     register,
+    setUser,
   };
 };
 
-const getUser = (): User | null=> {
+const getUser = (): User | null => {
   try {
     const saved = localStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
   } catch (error) {
-    console.error('Failed to parse user:', error);
     return null;
   }
 };
 
-const getToken = (): string | null=> {
+const getToken = (): string | null => {
   try {
     const saved = localStorage.getItem('token');
     return saved || null;
   } catch (error) {
-    console.error('Failed to parse token:', error);
     return null;
   }
 };
