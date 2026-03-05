@@ -4,6 +4,7 @@ export interface User {
   name: string;
   birthDate: string | null;
   createdAt: string;
+  avatar: string | null;
 }
 
 export interface AuthContextType {

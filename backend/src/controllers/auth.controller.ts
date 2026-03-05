@@ -8,6 +8,7 @@ import {
   updatePasswordSchema,
   updateProfileSchema,
 } from '../schemas/auth.schema';
+import cloudinary, { uploadToCloudinary } from '../cloudinary';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -58,7 +59,7 @@ export const login = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      return res.status(401).json({ error: 'Wrong credentials' });
+      return res.status(404).json({ error: 'Wrong credentials' });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
@@ -90,6 +91,7 @@ export const me = async (req: Request, res: Response) => {
         name: true,
         email: true,
         birthDate: true,
+        avatar: true,
         createdAt: true,
       },
     });
@@ -160,10 +162,55 @@ export const updatePassword = async (req: Request, res: Response) => {
 
     await prisma.user.update({
       where: { id: userId },
-      data: { password }
+      data: { password },
     });
 
     return res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : 'Server error';
+    return res.status(500).json({ error });
+  }
+};
+
+export const updateAvatar = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Invalid image input' });
+    }
+    const { userId } = req.user!;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        avatar: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Wrong credentials' });
+    }
+
+    if (user.avatar) {
+      const publicId = user.avatar.split('/').slice(-2).join('/').split('.')[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    const { secure_url } = await uploadToCloudinary(req.file.buffer);
+
+    const userData = await prisma.user.update({
+      where: { id: userId },
+      data: { avatar: secure_url },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        birthDate: true,
+        avatar: true,
+        createdAt: true,
+      },
+    });
+
+    return res.status(200).json({ user: userData });
   } catch (err: unknown) {
     const error = err instanceof Error ? err.message : 'Server error';
     return res.status(500).json({ error });

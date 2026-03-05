@@ -1,11 +1,12 @@
 import type React from 'react';
 import './ProfilePage.css';
 import { useAuthContext } from '../../contexts/AuthContext';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import api from '../../services/api';
 import axios from 'axios';
+import { uploadAvatar } from '../../services/uploadService';
 
 const MIN_AGE = 13;
 const MAX_AGE = 120;
@@ -21,6 +22,9 @@ minBirthDate.setFullYear(today.getFullYear() - MAX_AGE);
 export const ProfilePage: React.FC = () => {
   const { user, setUser } = useAuthContext();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isAvatarLoading, setIsAvatarLoading] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [profileError, setProfileError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -156,14 +160,52 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsAvatarLoading(true);
+    try {
+      const updatedUser = await uploadAvatar(file);
+      setUser(updatedUser);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setAvatarError(err.response?.data?.error ?? 'Failed to upload avatar');
+      } else {
+        setAvatarError('Failed to upload avatar');
+      }
+    } finally {
+      setIsAvatarLoading(false);
+    }
+  };
+
   return (
     <div className="profile-page">
       <div className="profile-container">
         {/* Header */}
         <div className="profile-header">
-          <div className="profile-avatar">
-            <i className="fas fa-user"></i>
+          <div className="profile-avatar" onClick={handleAvatarClick}>
+            {user.avatar ? (
+              <img src={user.avatar} alt={user.name} />
+            ) : (
+              <i className="fas fa-user"></i>
+            )}
+            <div className="profile-avatar-overlay">
+              <i className={`fas ${isAvatarLoading ? 'fa-spinner fa-spin' : 'fa-camera'}`}></i>
+            </div>
           </div>
+          {avatarError && <p className="profile-avatar-error">{avatarError}</p>}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            style={{ display: 'none' }}
+            onChange={handleAvatarChange}
+          />
           <div className="profile-header-info">
             <h1 className="profile-name">{user.name}</h1>
             <p className="profile-email">{user.email}</p>
