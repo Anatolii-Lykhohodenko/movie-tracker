@@ -8,8 +8,10 @@ import { TMDB_IMAGE_SIZES } from '../../components/constants/images';
 import { MovieList } from '../MovieList';
 import './MovieDetail.css';
 import { useWatchListContext } from '../../contexts/WatchListContext';
+import { useState } from 'react';
 
 export const MovieDetail: React.FC = () => {
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const { isInWatchlist, toggleWatchlist } = useWatchListContext();
   const { id } = useParams();
   const movieId = Number(id);
@@ -47,7 +49,7 @@ export const MovieDetail: React.FC = () => {
     );
   }
 
-  const { movie, similar, credits } = data;
+  const { movie, similar, credits, video } = data;
 
   if (!movie) return null;
 
@@ -60,6 +62,8 @@ export const MovieDetail: React.FC = () => {
     : PLACEHOLDER_POSTER;
 
   const year = movie.release_date ? movie.release_date.slice(0, 4) : 'N/A';
+
+  const trailerKey = video ? video[0].key : null;
 
   return (
     <div className="movie-detail-page">
@@ -86,16 +90,30 @@ export const MovieDetail: React.FC = () => {
 
             {movie.tagline && <p className="subtitle is-4 has-text-white-ter">"{movie.tagline}"</p>}
 
-            <div className="tags are-medium mt-4">
-              {movie.vote_average > 0 && (
-                <span className="tag is-warning is-light">⭐ {movie.vote_average.toFixed(1)}</span>
+            <div className="hero-tags-row mt-4">
+              {trailerKey && (
+                <button
+                  className="button is-warning is-small"
+                  onClick={() => setIsTrailerOpen(true)}
+                >
+                  <span className="icon">
+                    <i className="fas fa-play"></i>
+                  </span>
+                  <span>Watch Trailer</span>
+                </button>
               )}
 
-              {!!movie.runtime && (
-                <span className="tag is-info is-light">⏱️ {movie.runtime} min</span>
-              )}
-
-              <span className="tag is-light">📅 {year}</span>
+              <div className="tags are-medium mb-0">
+                {movie.vote_average > 0 && (
+                  <span className="tag is-warning is-light">
+                    ⭐ {movie.vote_average.toFixed(1)}
+                  </span>
+                )}
+                {!!movie.runtime && (
+                  <span className="tag is-info is-light">⏱️ {movie.runtime} min</span>
+                )}
+                <span className="tag is-light">📅 {year}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -183,6 +201,19 @@ export const MovieDetail: React.FC = () => {
 
               {/* Watchlist Button */}
               <div className="watchlist-button-wrapper">
+                {movie.homepage && movie.homepage.length > 0 && (
+                  <a
+                    href={movie.homepage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="button is-large is-success"
+                  >
+                    <span className="icon">
+                      <i className="fas fa-eye"></i>
+                    </span>
+                    <span>Watch</span>
+                  </a>
+                )}
                 <button
                   className={`button is-large ${
                     isInWatchlist(movie.id) ? 'is-danger' : 'is-primary'
@@ -201,7 +232,6 @@ export const MovieDetail: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* ========== CAST SECTION (ОТДЕЛЬНАЯ!) ========== */}
       {credits && credits.cast && credits.cast.length > 0 && (
         <section className="section cast-full-section">
@@ -247,6 +277,22 @@ export const MovieDetail: React.FC = () => {
             <MovieList movies={similar.results} />
           </div>
         </section>
+      )}
+      {trailerKey && isTrailerOpen && (
+        <div className="trailer-overlay" onClick={() => setIsTrailerOpen(false)}>
+          <div className="trailer-wrapper">
+            <button className="trailer-close" onClick={() => setIsTrailerOpen(false)}>
+              <i className="fas fa-times"></i>
+            </button>
+            <div className="trailer-modal" onClick={e => e.stopPropagation()}>
+              <iframe
+                src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
+                allowFullScreen
+                allow="autoplay"
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

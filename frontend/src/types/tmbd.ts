@@ -17,6 +17,7 @@ export interface MovieDetail extends MovieBase {
   tagline: string | null;
   budget?: number;
   revenue?: number;
+  homepage: string | null
 }
 
 export type Movie = MovieListItem | MovieDetail;
@@ -24,6 +25,7 @@ export interface MovieInfo {
   movie: MovieDetail;
   similar?: TMDBResponse;
   credits?: Credits;
+  video?: Video[];
 };
 
 export function isMovieDetail(movie: Movie): movie is MovieDetail {
@@ -63,3 +65,20 @@ export interface Filters {
   rating: string;
 }
 
+export interface VideoResponse {
+  id: number;
+  results: Video[];
+}
+
+export interface Video {
+  iso_639_1: string;
+  iso_3166_1: string;
+  name: string;
+  key: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+  published_at: string;
+  id: string;
+}

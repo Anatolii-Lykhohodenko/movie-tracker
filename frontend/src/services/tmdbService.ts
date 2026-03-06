@@ -5,6 +5,7 @@ import type {
   MovieInfo,
   MovieListItem,
   TMDBResponse,
+  VideoResponse,
 } from '../types/tmbd';
 
 const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
@@ -50,13 +51,14 @@ export const getMovieById = (id: number): Promise<MovieListItem> => {
 };
 
 export const getMovieInfoById = async (id: number): Promise<MovieInfo> => {
-  const [movie, similar, credits] = await Promise.all([
+  const [movie, similar, credits, video] = await Promise.all([
     fetchTMDB<MovieDetail>(`/movie/${id}`),
     fetchTMDB<TMDBResponse>(`/movie/${id}/similar`),
     fetchTMDB<Credits>(`/movie/${id}/credits`),
+    getMovieTrailers(id),
   ]);
 
-  return { movie, similar, credits };
+  return { movie, similar, credits, video };
 };
 
 export const getMoviesWithFilters = ({
@@ -93,4 +95,9 @@ const preparedFilters = Object.entries(filters).reduce(
     include_adult: 'false',
     page,
   });
+};
+
+export const getMovieTrailers = async (movieId: number) => {
+  const data = await fetchTMDB<VideoResponse>(`/movie/${movieId}/videos`);
+  return data.results.filter((video) => video.site === 'YouTube' && video.type === 'Trailer');
 };
