@@ -29,14 +29,14 @@ export const useAuth = (): AuthContextType => {
     }
 
     try {
-      const { data } = await api.post('/auth/login', { email, password });
-      const { user, token }: { user: User; token: string } = data;
+      const result = await api.post('/auth/login', { email, password });
+      const { user, token }: { user: User; token: string } = result.data;
 
       setToken(token);
       setUser(user);
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        throw new Error(err.response?.data?.error ?? 'Login failed');
+        throw new Error(err.response?.data?.error ?? "User doesn't exist");
       }
       throw err;
     }
@@ -60,7 +60,7 @@ export const useAuth = (): AuthContextType => {
       setUser(user);
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        throw new Error(err.response?.data?.error ?? 'Login failed');
+        throw new Error(err.response?.data?.error ?? 'Register failed');
       }
       throw err;
     }

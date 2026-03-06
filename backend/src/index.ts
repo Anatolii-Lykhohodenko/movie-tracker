@@ -8,15 +8,7 @@ import movieRoutes from './routes/movie.routes';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(
-  cors({
-    origin: process.env.ALLOWED_ORIGINS
-      ? process.env.ALLOWED_ORIGINS.split(',')
-      : ['http://localhost:5173'],
-    credentials: true,
-  }),
-);
-
+app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
