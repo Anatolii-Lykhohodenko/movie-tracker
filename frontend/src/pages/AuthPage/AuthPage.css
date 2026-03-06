@@ -206,3 +206,7 @@
     font-size: 1.875rem;
   }
 }
+
+.auth-spinner-icon {
+  margin-right: 10px !important; /* !important чтобы перебить Bulma */
+}

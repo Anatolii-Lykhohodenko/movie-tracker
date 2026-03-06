@@ -20,7 +20,9 @@ export const AuthPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      setTimeout(async () => {
+        await login(email, password);
+      }, 3000)
       navigate(location.state?.from?.pathname ?? '/');
     } catch (err: any) {
       setError(err.message);
@@ -85,7 +87,7 @@ export const AuthPage: React.FC = () => {
             >
               {isLoading ? (
                 <>
-                  <span className="icon">
+                  <span className="icon auth-spinner-icon">
                     <i className="fas fa-spinner fa-spin"></i>
                   </span>
                   Signing in...

@@ -35,10 +35,7 @@ export const useAuth = (): AuthContextType => {
       setToken(token);
       setUser(user);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        throw new Error(err.response?.data?.error ?? "User doesn't exist");
-      }
-      throw err;
+      handleApiError(err, 'Login failed');
     }
   }, []);
 
@@ -59,10 +56,7 @@ export const useAuth = (): AuthContextType => {
       setToken(token);
       setUser(user);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        throw new Error(err.response?.data?.error ?? 'Register failed');
-      }
-      throw err;
+      handleApiError(err, 'Registration failed');
     }
   }, []);
 
@@ -93,4 +87,11 @@ const getToken = (): string | null => {
   } catch (error) {
     return null;
   }
+};
+
+const handleApiError = (err: unknown, fallback: string): never => {
+  if (axios.isAxiosError(err)) {
+    throw new Error(err.response?.data?.error ?? fallback);
+  }
+  throw err instanceof Error ? err : new Error(fallback);
 };
