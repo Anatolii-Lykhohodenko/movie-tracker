@@ -56,6 +56,9 @@
 /* ── Watchlist Button ── */
 .watchlist-button-wrapper {
   margin-top: 1.75rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .movie-detail-page .columns .column:last-child {
@@ -173,7 +176,6 @@
   padding-bottom: 3rem;
 }
 
-/* ── Responsive ── */
 @media screen and (max-width: 768px) {
   .movie-poster {
     max-width: 300px;
@@ -188,14 +190,22 @@
     font-size: 1.25rem;
   }
 
-  .watchlist-button-wrapper {
-    margin-top: 1.25rem;
-    text-align: center;
+  .movie-detail-page .columns {
+    flex-direction: column;
   }
 
-  .watchlist-button-wrapper .button.is-large {
+  .movie-detail-page .columns .column {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .watchlist-button-wrapper .button {
     width: 100%;
-    font-size: 1rem;
+  }
+
+  .trailer-close {
+    top: -36px;
+    font-size: 1.25rem;
   }
 }
 
@@ -261,9 +271,12 @@
   margin-bottom: 0;
 }
 
-.watchlist-button-wrapper {
-  margin-top: 1.75rem;
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+@media screen and (max-width: 480px) {
+  .movie-hero .title.is-1 {
+    font-size: 1.5rem;
+  }
+
+  .movie-hero .subtitle.is-4 {
+    font-size: 1rem;
+  }
 }

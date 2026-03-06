@@ -109,3 +109,18 @@
     gap: 0.4rem;
   }
 }
+
+@media (max-width: 480px) {
+  .navbar-item span:not(.icon):not(.tag) {
+    display: none;
+  }
+
+  .navbar .button.is-light span:not(.icon) {
+    display: none;
+  }
+
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+}
+

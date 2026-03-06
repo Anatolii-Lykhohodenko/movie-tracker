@@ -20,7 +20,7 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
 
   return (
     <div
-      className="column is-6-mobile is-4-tablet is-3-desktop is-2-widescreen"
+      className="column is-6-mobile is-4-tablet is-4-desktop is-3-widescreen"
       style={{ gap: '1rem', padding: '1rem' }}
     >
       <div
@@ -69,11 +69,11 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
                   e.stopPropagation();
                   toggleWatchlist(movie.id);
                 }}
-                title={isInWatchlist(movie.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
               >
-                <span className="is-hidden-mobile">
-                  {isInWatchlist(movie.id) ? 'In Watchlist' : 'Add to Watchlist'}
+                <span className="icon">
+                  <i className={`fas fa-heart`}></i>
                 </span>
+                <span>{isInWatchlist(movie.id) ? 'In Watchlist' : 'Add to Watchlist'}</span>
               </button>
             </div>
           </div>

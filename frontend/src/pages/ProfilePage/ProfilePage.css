@@ -252,7 +252,26 @@
   .profile-edit-actions {
     flex-direction: column;
   }
+
+  .profile-edit-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-save-btn,
+  .profile-cancel-btn {
+    width: 100% !important;
+  }
+
+  .profile-page {
+    padding: 1.25rem 0.75rem 3rem;
+  }
+
+  .profile-card {
+    padding: 1.25rem;
+  }
 }
+
 
 /* ── DatePicker dark theme ── */
 .react-datepicker {
