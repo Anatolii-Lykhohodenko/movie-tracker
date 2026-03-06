@@ -20,9 +20,7 @@ export const AuthPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      setTimeout(async () => {
-        await login(email, password);
-      }, 3000)
+      await login(email, password);
       navigate(location.state?.from?.pathname ?? '/');
     } catch (err: any) {
       setError(err.message);

@@ -22,13 +22,16 @@ api.interceptors.response.use(
       !err.config?.url?.includes('/auth/login') &&
       !err.config?.url?.includes('/auth/register')
     ) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      const token = localStorage.getItem('token');
+      if (token) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
-
     return Promise.reject(err);
   },
 );
+
 
 export default api;

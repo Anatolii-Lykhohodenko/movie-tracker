@@ -35,7 +35,7 @@ export const useAuth = (): AuthContextType => {
       setToken(token);
       setUser(user);
     } catch (err) {
-      handleApiError(err, 'Login failed');
+      handleApiError(err, 'Wrong credentials');
     }
   }, []);
 

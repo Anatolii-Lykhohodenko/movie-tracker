@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 import '../AuthPage/AuthPage.css';
-import axios from 'axios';
 
 export const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -47,8 +46,8 @@ export const RegisterPage: React.FC = () => {
       await register(email, password, name);
       navigate(location.state?.from?.pathname ?? '/');
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.error ?? 'Something went wrong');
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
         setError('Something went wrong');
       }
