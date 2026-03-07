@@ -4,27 +4,26 @@ import './NavBar.css';
 import { useWatchListContext } from '../../contexts/WatchListContext';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useFilterContext } from '../../contexts/FilterContext';
-import { useFavourites } from '../../hooks/useFavourites';
+import { useFavouritesContext } from '../../contexts/FavouritesContext';
 
 export const NavBar: React.FC = () => {
   const navigate = useNavigate();
   const { movieIds: watchListMovieIds } = useWatchListContext();
-  const { movieIds: favouritesMovieIds } = useFavourites();
-  const location = useLocation();
-  const isAuthPage = ['/login', '/register'].includes(location.pathname);
+  const { movieIds: favouritesMovieIds } = useFavouritesContext();
   const { isAuthenticated, logout } = useAuthContext();
   const { toggleSidebar } = useFilterContext();
   const { resetFilters } = useFilterContext();
   const { pathname } = useLocation();
   const showFilter = ['/', '/watchlist'].includes(pathname);
+  const isAuthPage = ['/login', '/register'].includes(pathname);
 
   return (
     <nav className="navbar">
-      <div className="navbar-menu">
+      <div className="navbar-inner">
         <Link to="/" className="navbar-brand" onClick={resetFilters}>
           🎬 MOVIETON
         </Link>
-        <div className="navbar-end">
+        <div className="navbar-actions">
           {isAuthenticated && (
             <button
               className="button is-light logout"
@@ -34,7 +33,10 @@ export const NavBar: React.FC = () => {
                 navigate('/');
               }}
             >
-              Log out
+              <span className="icon">
+                <i className="fas fa-sign-out-alt" />
+              </span>
+              <span className="is-hidden-mobile">Log out</span>
             </button>
           )}
           {!isAuthenticated && !isAuthPage && (
@@ -45,7 +47,10 @@ export const NavBar: React.FC = () => {
                 navigate('/login');
               }}
             >
-              Log in
+              <span className="icon">
+                <i className="fas fa-sign-in-alt" />
+              </span>
+              <span className="is-hidden-mobile">Log in</span>
             </button>
           )}
           {isAuthenticated && (

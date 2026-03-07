@@ -22,14 +22,14 @@
   letter-spacing: -0.5px;
 }
 
-.navbar-menu {
+.navbar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
 }
 
-.navbar-end {
+.navbar-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -105,22 +105,15 @@
     font-size: 0.875rem;
   }
 
-  .navbar-end {
+  .navbar-actions {
     gap: 0.4rem;
   }
 }
 
 @media (max-width: 480px) {
-  .navbar-item span:not(.icon):not(.tag) {
-    display: none;
-  }
-
-  .navbar .button.is-light span:not(.icon) {
-    display: none;
-  }
-
   .navbar-brand {
     font-size: 1.1rem;
   }
 }
+
 
