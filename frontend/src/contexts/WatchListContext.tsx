@@ -2,10 +2,10 @@ import React, { useContext } from 'react';
 import { useWatchList } from '../hooks/useWatchList';
 
 interface WatchlistContextType {
-  watchListMovieIds: number[];
+  movieIds: number[];
   toggleWatchlist: (id: number) => void;
   isInWatchlist: (id: number) => boolean;
-  clearWatchList: () => void;
+  clearList: () => void;
 }
 
 export const WatchListContext = React.createContext<WatchlistContextType | null>(null);

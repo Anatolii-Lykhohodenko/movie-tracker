@@ -9,11 +9,13 @@ import './HomePage.css';
 import { useFilterContext } from '../../contexts/FilterContext';
 import equal from 'fast-deep-equal';
 import { defaultFilters } from '../../components/constants/filters';
+import { useAuthContext } from '../../contexts/AuthContext';
 
 export const HomePage: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { filters } = useFilterContext();
+  const { user } = useAuthContext()
 
   const isDefaultFilters = useMemo(() => equal(filters, defaultFilters), [filters]);
   const queryKey = useMemo(
@@ -23,14 +25,14 @@ export const HomePage: React.FC = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
     useInfiniteQuery<TMDBResponse, Error, InfiniteData<TMDBResponse>, QueryKey, number>({
-      queryKey: ['movies', queryKey],
+      queryKey: ['movies', queryKey, user?.isAdult ?? false],
       initialPageParam: 1,
       getNextPageParam: (lastPage: TMDBResponse) =>
         lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
       queryFn: ({ pageParam }) =>
         isDefaultFilters
-          ? getPopularMovies({ page: pageParam.toString() })
-          : getMoviesWithFilters({ filters, page: pageParam.toString() }),
+          ? getPopularMovies({ page: pageParam.toString(), isAdult: user?.isAdult })
+          : getMoviesWithFilters({ filters, page: pageParam.toString(), isAdult: user?.isAdult }),
     });
 
   useEffect(() => {

@@ -57,7 +57,8 @@
 .watchlist-button-wrapper {
   margin-top: 1.75rem;
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
@@ -108,7 +109,9 @@
   border-radius: 8px;
   box-shadow: none;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   cursor: pointer;
 }
 
@@ -200,7 +203,8 @@
   }
 
   .watchlist-button-wrapper .button {
-    width: 100%;
+    min-width: 140px;
+    justify-content: center;
   }
 
   .trailer-close {
@@ -258,7 +262,6 @@
   border: none;
   display: block;
 }
-
 
 .hero-tags-row {
   display: flex;

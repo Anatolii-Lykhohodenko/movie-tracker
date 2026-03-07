@@ -3,7 +3,7 @@ import { App } from './App';
 import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
 import { MovieDetail } from './pages/MovieDetail';
-import { WatchlistPage } from './pages/WatchlistPage';
+import { SavedMoviesPage } from './pages/SavedMoviesPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage';
 import { RequireAuth } from './pages/RequireAuth';
@@ -18,10 +18,14 @@ export const Root = () => (
         <Route path="/home" element={<Navigate to="/" replace />}></Route>
         <Route path="movie/:id" element={<MovieDetail />}></Route>
         <Route path="watchlist" element={<RequireAuth />}>
-          <Route index element={<WatchlistPage />} />
+          <Route index element={<SavedMoviesPage type={'watchlist'} />} />
         </Route>
         <Route path="profile" element={<RequireAuth />}>
           <Route index element={<ProfilePage />}></Route>
+        </Route>
+        <Route path="favorites" element={<Navigate to="/favourites" replace />} />
+        <Route path="favourites" element={<RequireAuth />}>
+          <Route index element={<SavedMoviesPage type={'favourites'} />}></Route>
         </Route>
         <Route element={<RedirectAuthPage />}>
           <Route path="login" element={<AuthPage />} />

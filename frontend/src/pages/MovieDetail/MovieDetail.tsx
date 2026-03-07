@@ -9,17 +9,21 @@ import { MovieList } from '../MovieList';
 import './MovieDetail.css';
 import { useWatchListContext } from '../../contexts/WatchListContext';
 import { useState } from 'react';
+import { useAuthContext } from '../../contexts/AuthContext';
+import { useFavouritesContext } from '../../contexts/FavouritesContext';
 
 export const MovieDetail: React.FC = () => {
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const { isInWatchlist, toggleWatchlist } = useWatchListContext();
+  const { isInFavourites, toggleFavourites } = useFavouritesContext();
+  const { user } = useAuthContext();
   const { id } = useParams();
   const movieId = Number(id);
   const isValidId = Number.isFinite(movieId) && movieId > 0;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['movie', movieId],
-    queryFn: () => getMovieInfoById(movieId),
+    queryFn: () => getMovieInfoById(movieId, user?.isAdult),
     enabled: isValidId,
   });
 
@@ -206,7 +210,7 @@ export const MovieDetail: React.FC = () => {
                     href={movie.homepage}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="button is-large is-success"
+                    className="button  is-medium is-success"
                   >
                     <span className="icon">
                       <i className="fas fa-eye"></i>
@@ -214,19 +218,32 @@ export const MovieDetail: React.FC = () => {
                     <span>Watch</span>
                   </a>
                 )}
-                <button
-                  className={`button is-large ${
-                    isInWatchlist(movie.id) ? 'is-danger' : 'is-primary'
-                  }`}
-                  onClick={() => toggleWatchlist(movie.id)}
-                >
-                  <span className="icon">
-                    <i className={`fas fa-heart`}></i>
-                  </span>
-                  <span>
-                    {isInWatchlist(movie.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
-                  </span>
-                </button>
+                {user && (
+                  <button
+                    className={`button is-medium ${isInWatchlist(movie.id) ? 'is-danger' : 'is-warning'}`}
+                    onClick={() => toggleWatchlist(movie.id)}
+                    title={isInWatchlist(movie.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                  >
+                    <span className="icon">
+                      <i className="fas fa-bookmark"></i>
+                    </span>
+                    <span>{isInWatchlist(movie.id) ? 'Watchlist ✓' : 'Watchlist'}</span>
+                  </button>
+                )}
+                {user && (
+                  <button
+                    className={`button is-medium ${isInFavourites(movie.id) ? 'is-danger' : 'is-primary'}`}
+                    onClick={() => toggleFavourites(movie.id)}
+                    title={
+                      isInFavourites(movie.id) ? 'Remove from Favourites' : 'Add to Favourites'
+                    }
+                  >
+                    <span className="icon">
+                      <i className="fas fa-heart"></i>
+                    </span>
+                    <span>{isInFavourites(movie.id) ? 'Favourite ✓' : 'Favourite'}</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

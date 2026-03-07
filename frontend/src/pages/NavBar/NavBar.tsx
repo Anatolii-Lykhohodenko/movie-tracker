@@ -4,10 +4,12 @@ import './NavBar.css';
 import { useWatchListContext } from '../../contexts/WatchListContext';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useFilterContext } from '../../contexts/FilterContext';
+import { useFavourites } from '../../hooks/useFavourites';
 
 export const NavBar: React.FC = () => {
   const navigate = useNavigate();
-  const { watchListMovieIds } = useWatchListContext();
+  const { movieIds: watchListMovieIds } = useWatchListContext();
+  const { movieIds: favouritesMovieIds } = useFavourites();
   const location = useLocation();
   const isAuthPage = ['/login', '/register'].includes(location.pathname);
   const { isAuthenticated, logout } = useAuthContext();
@@ -50,12 +52,25 @@ export const NavBar: React.FC = () => {
             <Link to="/watchlist" className="navbar-item">
               <span className="icon-text">
                 <span className="icon">
-                  <i className="fas fa-heart"></i>
+                  <i className="fas fa-bookmark"></i>
                 </span>
                 <span className="is-hidden-mobile">Watchlist</span>
               </span>
               {watchListMovieIds.length > 0 && (
                 <span className="tag is-danger is-rounded ml-2">{watchListMovieIds.length}</span>
+              )}
+            </Link>
+          )}
+          {isAuthenticated && (
+            <Link to="/favourites" className="navbar-item">
+              <span className="icon-text">
+                <span className="icon">
+                  <i className="fas fa-heart"></i>
+                </span>
+                <span className="is-hidden-mobile">Favourites</span>
+              </span>
+              {favouritesMovieIds.length > 0 && (
+                <span className="tag is-danger is-rounded ml-2">{favouritesMovieIds.length}</span>
               )}
             </Link>
           )}

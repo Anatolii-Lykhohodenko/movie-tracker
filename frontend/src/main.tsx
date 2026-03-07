@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WatchListProvider } from './contexts/WatchListContext';
 import { AuthProvider } from './contexts/AuthContext.tsx';
 import { FilterProvider } from './contexts/FilterContext.tsx';
+import { FavouritesProvider } from './contexts/FavouritesContext.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,9 +23,11 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <WatchListProvider>
-          <FilterProvider>
-          <Root />
-          </FilterProvider>
+          <FavouritesProvider>
+            <FilterProvider>
+              <Root />
+            </FilterProvider>
+          </FavouritesProvider>
         </WatchListProvider>
       </AuthProvider>
     </QueryClientProvider>

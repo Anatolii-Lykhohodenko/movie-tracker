@@ -1,0 +1,46 @@
+.age-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff8e1;
+  border-bottom: 2px solid #ffe082;
+  padding: 10px 20px;
+  gap: 12px;
+}
+
+.age-banner__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.age-banner__icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.age-banner__text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #5a4a00;
+}
+
+.age-banner__link {
+  flex-shrink: 0;
+}
+
+.age-banner__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 1rem;
+  padding: 4px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.age-banner__close:hover {
+  color: #333;
+}

@@ -9,6 +9,13 @@ import {
   updateProfileSchema,
 } from '../schemas/auth.schema';
 import cloudinary, { uploadToCloudinary } from '../cloudinary';
+import type { User as PrismaUser } from '@prisma/client';
+
+type UserWithoutPassword = Omit<PrismaUser, 'password'>;
+
+type UserResponse = UserWithoutPassword & {
+  isAdult: boolean;
+};
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -39,7 +46,9 @@ export const register = async (req: Request, res: Response) => {
 
     const { password: _, ...userWithoutPassword } = user;
 
-    return res.status(201).json({ token, user: userWithoutPassword });
+    const prepareduser = calculateIsAdult(userWithoutPassword);
+
+    return res.status(201).json({ token, user: prepareduser });
   } catch (err: unknown) {
     const error = err instanceof Error ? err.message : 'Server error';
     return res.status(500).json({ error });
@@ -72,8 +81,9 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: '7d',
     });
     const { password: _, ...userWithoutPassword } = user;
+    const prepareduser = calculateIsAdult(userWithoutPassword);
 
-    return res.status(200).json({ token, user: userWithoutPassword });
+    return res.status(200).json({ token, user: prepareduser });
   } catch (err: unknown) {
     const error = err instanceof Error ? err.message : 'Server error';
 
@@ -93,6 +103,7 @@ export const me = async (req: Request, res: Response) => {
         birthDate: true,
         avatar: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -100,7 +111,8 @@ export const me = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User does not exist' });
     }
 
-    return res.status(200).json({ user: userData });
+    const prepareduser = calculateIsAdult(userData);
+    return res.status(200).json({ user: prepareduser });
   } catch (err: unknown) {
     const error = err instanceof Error ? err.message : 'Server error';
     return res.status(500).json({ error });
@@ -125,7 +137,8 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     const { password, ...userData } = newUserData;
 
-    return res.status(200).json({ user: userData });
+    const prepareduser = calculateIsAdult(userData);
+    return res.status(200).json({ user: prepareduser });
   } catch (err: unknown) {
     const error = err instanceof Error ? err.message : 'Server error';
     return res.status(500).json({ error });
@@ -207,12 +220,35 @@ export const updateAvatar = async (req: Request, res: Response) => {
         birthDate: true,
         avatar: true,
         createdAt: true,
+        updatedAt: true
       },
     });
 
-    return res.status(200).json({ user: userData });
+    const prepareduser = calculateIsAdult(userData);
+
+    return res.status(200).json({ user: prepareduser });
   } catch (err: unknown) {
     const error = err instanceof Error ? err.message : 'Server error';
     return res.status(500).json({ error });
   }
 };
+
+function calculateIsAdult(user: UserWithoutPassword): UserResponse {
+  let isAdult = false;
+
+  if (user.birthDate) {
+    const today = new Date();
+    const birth = new Date(user.birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    isAdult = age >= 18;
+  }
+
+  return { ...user, isAdult };
+}
+

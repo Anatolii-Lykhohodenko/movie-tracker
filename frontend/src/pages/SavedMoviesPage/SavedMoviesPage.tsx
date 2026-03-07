@@ -1,18 +1,45 @@
 import type React from 'react';
 import { Link } from 'react-router-dom';
 import { Loader } from '../../components/Loader';
-import './WatchlistPage.css';
+import './SavedMoviesPage.css';
 import { EmptyState } from '../../components/EmplyState';
 import { useWatchListContext } from '../../contexts/WatchListContext';
 import { useQueries } from '@tanstack/react-query';
 import { getMovieById } from '../../services/tmdbService';
 import { MovieList } from '../MovieList';
+import { useFavouritesContext } from '../../contexts/FavouritesContext';
 
-export const WatchlistPage: React.FC = () => {
-  const { watchListMovieIds, clearWatchList } = useWatchListContext();
+type Props = {
+  type: 'watchlist' | 'favourites';
+};
+
+export const SavedMoviesPage: React.FC<Props> = ({ type }) => {
+  const isWatchlist = type === 'watchlist';
+
+  const watchlist = useWatchListContext();
+  const favourites = useFavouritesContext();
+  const { movieIds, clearList } = isWatchlist ? watchlist : favourites;
+
+  const config = {
+    watchlist: {
+      title: 'My Watchlist',
+      icon: 'fa-bookmark',
+      emptyTitle: 'Your watchlist is empty',
+      emptyDescription: 'Start adding movies you want to watch later!',
+      hint: 'Click on a movie to remove it from your watchlist',
+    },
+    favourites: {
+      title: 'My Favourites',
+      icon: 'fa-heart',
+      emptyTitle: 'No favourites yet',
+      emptyDescription: 'Start adding movies you loved!',
+      hint: 'Click on a movie to remove it from your favorites',
+    },
+  }[type];
+
   const movieQueries = useQueries({
-    queries: watchListMovieIds.map(movieId => ({
-      queryKey: ['watchListMovie', movieId],
+    queries: movieIds.map(movieId => ({
+      queryKey: [type === 'watchlist' ? 'watchListMovie' : 'favouriteMovie', movieId],
       queryFn: () => getMovieById(movieId),
     })),
   });
@@ -26,12 +53,12 @@ export const WatchlistPage: React.FC = () => {
   }
 
   // ========== EMPTY STATE ==========
-  if (watchListMovieIds.length === 0) {
+  if (movieIds.length === 0) {
     return (
       <EmptyState
         icon="fa-heart-broken"
-        title="Your watchlist is empty"
-        description="Start adding movies you want to watch later!"
+        title={config.emptyTitle}
+        description={config.emptyDescription}
         actionLabel="Browse Movies"
         actionLink="/"
       />
@@ -50,9 +77,11 @@ export const WatchlistPage: React.FC = () => {
                   <h1 className="title is-2">
                     <span className="icon-text">
                       <span className="icon has-text-danger">
-                        <i className="fas fa-heart fa-lg"></i>
+                        <i className={`fas ${config.icon} fa-lg`}></i>
                       </span>
-                      <span className="has-text-grey" style={{ paddingLeft: '10px' }}>My Watchlist</span>
+                      <span className="has-text-grey" style={{ paddingLeft: '10px' }}>
+                        {config.title}
+                      </span>
                     </span>
                   </h1>
                   <p className="subtitle is-5 has-text-grey-dark">
@@ -69,7 +98,7 @@ export const WatchlistPage: React.FC = () => {
                   <button
                     className="button is-outlined is-danger"
                     onClick={() => {
-                      clearWatchList();
+                      clearList();
                     }}
                   >
                     <span className="icon">
@@ -106,10 +135,10 @@ export const WatchlistPage: React.FC = () => {
             <span className="icon">
               <i className="fas fa-info-circle"></i>
             </span>
-            <span>Click on a movie to remove it from your watchlist</span>
+            <span>{config.hint}</span>
           </p>
         </div>
       </section>
     </div>
   );
-};
+};;

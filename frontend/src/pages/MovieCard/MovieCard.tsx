@@ -5,6 +5,8 @@ import type { Movie } from '../../types/tmbd';
 import styles from './MovieCard.module.scss';
 import { TMDB_IMAGE_SIZES } from '../../components/constants/images';
 import { useWatchListContext } from '../../contexts/WatchListContext';
+import { useAuthContext } from '../../contexts/AuthContext';
+import { useFavouritesContext } from '../../contexts/FavouritesContext';
 
 interface Props {
   movie: Movie;
@@ -12,26 +14,51 @@ interface Props {
 
 export const MovieCard: React.FC<Props> = ({ movie }) => {
   const { isInWatchlist, toggleWatchlist } = useWatchListContext();
+  const { isInFavourites, toggleFavourites } = useFavouritesContext();
+  const { user } = useAuthContext();
   const imgUrl = movie?.poster_path
     ? `${TMDB_IMAGE_SIZES.poster.large}${movie.poster_path}`
     : PLACEHOLDER_POSTER;
-  // const { isAuthenticated } = useAuth();
-
 
   return (
     <div
-      className="column is-6-mobile is-4-tablet is-4-desktop is-3-widescreen"
+      className="column is-12-mobile is-4-tablet is-4-desktop is-3-widescreen"
       style={{ gap: '1rem', padding: '1rem' }}
     >
-      <div
-        className={`card ${styles.movieCard}`}
-        style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-      >
+      <div className={`card ${styles.movieCard}`}>
         <div className="card-image">
           <figure className={`image is-2by3 ${styles.cardImage}`}>
             <img src={imgUrl} alt={movie.title} style={{ objectFit: 'cover' }} loading="lazy" />
+
+            {/* ── Poster overlay icons ── */}
+            {user && (
+              <div className={styles.posterOverlay}>
+                <button
+                  className={`${styles.overlayBtn} ${isInWatchlist(movie.id) ? styles.active : ''}`}
+                  onClick={e => {
+                    e.stopPropagation();
+                    toggleWatchlist(movie.id);
+                  }}
+                  title={isInWatchlist(movie.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                >
+                  <i className="fas fa-bookmark" />
+                </button>
+
+                <button
+                  className={`${styles.overlayBtn} ${isInFavourites(movie.id) ? styles.active : ''}`}
+                  onClick={e => {
+                    e.stopPropagation();
+                    toggleFavourites(movie.id);
+                  }}
+                  title={isInFavourites(movie.id) ? 'Remove from Favourites' : 'Add to Favourites'}
+                >
+                  <i className="fas fa-heart" />
+                </button>
+              </div>
+            )}
           </figure>
         </div>
+
         <div className={`card-content ${styles.cardContent}`}>
           <Link to={`/movie/${movie.id}`} className={styles.cardLink}>
             <p className={`title is-4 has-text-weight-semibold mb-2 ${styles.title}`}>
@@ -51,6 +78,7 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
               No description available
             </div>
           )}
+
           <div className={styles.footer}>
             <div className="is-size-6 has-text-grey-light mb-1">
               <time dateTime={movie?.release_date}>
@@ -62,20 +90,6 @@ export const MovieCard: React.FC<Props> = ({ movie }) => {
             ) : (
               <span className="tag">No ratings</span>
             )}
-            <div className={styles.cardFooter}>
-              <button
-                className={`button ${isInWatchlist(movie.id) ? 'is-danger' : 'is-light'}`}
-                onClick={e => {
-                  e.stopPropagation();
-                  toggleWatchlist(movie.id);
-                }}
-              >
-                <span className="icon">
-                  <i className={`fas fa-heart`}></i>
-                </span>
-                <span>{isInWatchlist(movie.id) ? 'In Watchlist' : 'Add to Watchlist'}</span>
-              </button>
-            </div>
           </div>
         </div>
       </div>

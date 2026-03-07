@@ -5,6 +5,7 @@ export interface User {
   birthDate: string | null;
   createdAt: string;
   avatar: string | null;
+  isAdult: boolean
 }
 
 export interface AuthContextType {
