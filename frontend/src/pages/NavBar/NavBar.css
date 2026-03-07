@@ -113,7 +113,22 @@
 @media (max-width: 480px) {
   .navbar-brand {
     font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .navbar-actions {
+    gap: 0.25rem;
+  }
+
+  .navbar-item {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .navbar .button.is-light {
+    padding: 0.4rem 0.5rem;
+    min-width: unset;
   }
 }
+
 
 

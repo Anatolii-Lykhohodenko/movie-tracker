@@ -21,8 +21,9 @@ export const NavBar: React.FC = () => {
     <nav className="navbar">
       <div className="navbar-inner">
         <Link to="/" className="navbar-brand" onClick={resetFilters}>
-          🎬 MOVIETON
+          <span className="is-hidden-mobile">🎬 </span>MOVIETON
         </Link>
+
         <div className="navbar-actions">
           {isAuthenticated && (
             <button
