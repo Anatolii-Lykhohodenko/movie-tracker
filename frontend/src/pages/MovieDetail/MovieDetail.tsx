@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { getMovieInfoById } from '../../services/tmdbService';
 import { Loader } from '../../components/Loader';
@@ -8,11 +8,26 @@ import { TMDB_IMAGE_SIZES } from '../../components/constants/images';
 import { MovieList } from '../MovieList';
 import './MovieDetail.css';
 import { useWatchListContext } from '../../contexts/WatchListContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useFavouritesContext } from '../../contexts/FavouritesContext';
+import api from '../../services/api';
+import axios from 'axios';
+
+type Review = {
+  rating: number;
+  comment: string;
+  updatedAt: string;
+  user: {
+    id: number;
+    name: string;
+    avatar: string;
+  };
+};
 
 export const MovieDetail: React.FC = () => {
+  const queryClient = useQueryClient();
+
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const { isInWatchlist, toggleWatchlist } = useWatchListContext();
   const { isInFavourites, toggleFavourites } = useFavouritesContext();
@@ -21,11 +36,37 @@ export const MovieDetail: React.FC = () => {
   const movieId = Number(id);
   const isValidId = Number.isFinite(movieId) && movieId > 0;
 
-  const { data, isLoading, error } = useQuery({
+  const {
+    data: movieData,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['movie', movieId],
     queryFn: () => getMovieInfoById(movieId, user?.isAdult),
     enabled: isValidId,
   });
+
+  const { data: reviewData, isLoading: isReviewLoading } = useQuery({
+    queryKey: ['reviews', movieId],
+    queryFn: () => api.get(`/movies/${movieId}/rate`),
+    enabled: isValidId,
+  });
+
+  const myReview = reviewData?.data?.ratingData?.ratings.find((review: Review) => {
+    return review.user.id === user?.id;
+  });
+
+  const [isShowForm, setIsShowForm] = useState(true);
+  const [comment, setComment] = useState('');
+  const [rating, setRating] = useState(0);
+
+  useEffect(() => {
+    if (myReview) {
+      setIsShowForm(false);
+      setComment(myReview.comment ?? '');
+      setRating(myReview.rating ?? 0);
+    }
+  }, [myReview?.updatedAt]);
 
   if (!isValidId) {
     return (
@@ -41,7 +82,7 @@ export const MovieDetail: React.FC = () => {
 
   if (isLoading) return <Loader fullscreen />;
 
-  if (error || !data) {
+  if (error || !movieData) {
     return (
       <div className="section">
         <div className="container">
@@ -53,9 +94,35 @@ export const MovieDetail: React.FC = () => {
     );
   }
 
-  const { movie, similar, credits, video } = data;
+  const sortedReviews = [...(reviewData?.data?.ratingData?.ratings ?? [])].sort(
+    (a: Review, b: Review) => {
+      if (a.user.name === user?.name) return -1;
+      if (b.user.name === user?.name) return 1;
+      return 0;
+    },
+  );
+
+  const { movie, similar, credits, video } = movieData;
 
   if (!movie) return null;
+
+  const handleReviewSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // setLoading(true)
+    try {
+      await api.post(`/movies/${movie.id}/rate`, { comment, rating });
+      queryClient.invalidateQueries({ queryKey: ['reviews', movieId] });
+      setIsShowForm(false);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        throw new Error(err.response?.data?.error ?? 'Login failed');
+      }
+      throw err;
+    }
+    // finally {
+    //   setLoading(false)
+    // }
+  };
 
   const backdropUrl = movie.backdrop_path
     ? `${TMDB_IMAGE_SIZES.backdrop.large}${movie.backdrop_path}`
@@ -66,7 +133,6 @@ export const MovieDetail: React.FC = () => {
     : PLACEHOLDER_POSTER;
 
   const year = movie.release_date ? movie.release_date.slice(0, 4) : 'N/A';
-
   const trailerKey = video ? video[0].key : null;
 
   return (
@@ -80,7 +146,6 @@ export const MovieDetail: React.FC = () => {
         }}
       >
         <div className="hero-overlay"></div>
-
         <div className="hero-body">
           <div className="container">
             <Link to="/" className="button is-light mb-4">
@@ -89,11 +154,8 @@ export const MovieDetail: React.FC = () => {
               </span>
               <span>Back</span>
             </Link>
-
             <h1 className="title is-1 has-text-white">{movie.title}</h1>
-
             {movie.tagline && <p className="subtitle is-4 has-text-white-ter">"{movie.tagline}"</p>}
-
             <div className="hero-tags-row mt-4">
               {trailerKey && (
                 <button
@@ -106,7 +168,6 @@ export const MovieDetail: React.FC = () => {
                   <span>Watch Trailer</span>
                 </button>
               )}
-
               <div className="tags are-medium mb-0">
                 {movie.vote_average > 0 && (
                   <span className="tag is-warning is-light">
@@ -132,17 +193,13 @@ export const MovieDetail: React.FC = () => {
                 <img src={posterUrl} alt={movie.title} style={{ borderRadius: '8px' }} />
               </figure>
             </div>
-
             <div className="column">
-              {/* Overview */}
               <div className="content">
                 <h2 className="title is-4">Overview</h2>
                 <p className="is-size-6 has-text-justified">
                   {movie.overview || 'No description available.'}
                 </p>
               </div>
-
-              {/* Genres */}
               {movie.genres && movie.genres.length > 0 && (
                 <div className="mt-5">
                   <h3 className="title is-5">Genres</h3>
@@ -155,8 +212,6 @@ export const MovieDetail: React.FC = () => {
                   </div>
                 </div>
               )}
-
-              {/* Details Table */}
               <div className="mt-5">
                 <h3 className="title is-5">Details</h3>
                 <table className="table is-striped is-fullwidth">
@@ -202,15 +257,13 @@ export const MovieDetail: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-
-              {/* Watchlist Button */}
               <div className="watchlist-button-wrapper">
                 {movie.homepage && movie.homepage.length > 0 && (
                   <a
                     href={movie.homepage}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="button  is-medium is-success"
+                    className="button is-medium is-success"
                   >
                     <span className="icon">
                       <i className="fas fa-eye"></i>
@@ -249,7 +302,8 @@ export const MovieDetail: React.FC = () => {
           </div>
         </div>
       </section>
-      {/* ========== CAST SECTION (ОТДЕЛЬНАЯ!) ========== */}
+
+      {/* ========== CAST SECTION ========== */}
       {credits && credits.cast && credits.cast.length > 0 && (
         <section className="section cast-full-section">
           <div className="container">
@@ -259,7 +313,6 @@ export const MovieDetail: React.FC = () => {
                 const avatarUrl = actor.profile_path
                   ? `${TMDB_IMAGE_SIZES.poster.small}${actor.profile_path}`
                   : null;
-
                 return (
                   <div key={actor.id} className="cast-card">
                     {avatarUrl ? (
@@ -286,6 +339,107 @@ export const MovieDetail: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* ========== REVIEWS SECTION ========== */}
+      <section className="section reviews-section">
+        <div className="container">
+          <h2 className="title is-4 reviews-title">Reviews</h2>
+
+          {/* Форма — только для залогиненных */}
+          {user && isShowForm && !isReviewLoading && (
+            <form className="review-form-wrapper" onSubmit={handleReviewSubmit}>
+              <h3 className="review-form-heading">Leave a Review</h3>
+
+              {/* Star rating */}
+              <div className="star-rating">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(star => (
+                  <button
+                    key={star}
+                    className={`star-btn ${star <= rating ? 'active' : ''}`}
+                    type="button"
+                    onClick={() => setRating(star)}
+                  >
+                    <i className="fas fa-star" />
+                  </button>
+                ))}
+                <span className="star-label">{rating} / 10</span>
+              </div>
+
+              {/* Comment textarea */}
+              <textarea
+                className="review-textarea"
+                placeholder="Share your thoughts about this movie..."
+                rows={4}
+                value={comment}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComment(e.target.value)}
+              />
+
+              <button className="button is-primary review-submit" type="submit">
+                <span className="icon">
+                  <i className="fas fa-paper-plane" />
+                </span>
+                <span>Submit Review</span>
+              </button>
+            </form>
+          )}
+
+          {/* Reviews list */}
+          <div className="reviews-list">
+            {sortedReviews.map((review: Review) => {
+              const {
+                user: reviewUser,
+                updatedAt,
+                rating: reviewRating,
+                comment: reviewComment,
+              } = review;
+
+              const date = new Date(updatedAt).toLocaleDateString('en-US', {
+                month: 'long',
+                year: 'numeric',
+              });
+              return (
+                <div key={`${reviewUser.name}${updatedAt}`} className="review-card">
+                  <div className="review-header">
+                    <div className="review-avatar">
+                      {reviewUser.avatar ? (
+                        <img src={review.user.avatar} alt={reviewUser.name} />
+                      ) : (
+                        reviewUser.name.charAt(0).toUpperCase()
+                      )}
+                    </div>
+
+                    <div className="review-meta">
+                      <span className="review-username">{reviewUser.name}</span>
+                      <span className="review-date">{date}</span>
+                    </div>
+                    <div className="review-rating">
+                      <span className="review-stars">
+                        {'★'.repeat(reviewRating)}
+                        {'☆'.repeat(10 - reviewRating)}
+                      </span>
+                      <span className="review-score">{reviewRating} / 10</span>
+                    </div>
+                    {Number(reviewUser.id) === Number(user?.id) && (
+                      <button
+                        className={`button is-small edit-review-btn ${isShowForm ? 'is-light' : 'is-warning is-light'}`}
+                        onClick={() => setIsShowForm(prev => !prev)}
+                        style={{ width: '110px' }}
+                      >
+                        <span className="icon">
+                          <i className={`fas ${isShowForm ? 'fa-times' : 'fa-edit'}`} />
+                        </span>
+                        <span>{isShowForm ? 'Cancel' : 'Edit review'}</span>
+                      </button>
+                    )}
+                  </div>
+                  <p className="review-comment">{reviewComment}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* ========== RECOMMENDATIONS SECTION ========== */}
       {similar?.results && similar.results.length > 0 && (
         <section className="section recommendations-section">
@@ -295,6 +449,7 @@ export const MovieDetail: React.FC = () => {
           </div>
         </section>
       )}
+
       {trailerKey && isTrailerOpen && (
         <div className="trailer-overlay" onClick={() => setIsTrailerOpen(false)}>
           <div className="trailer-wrapper">

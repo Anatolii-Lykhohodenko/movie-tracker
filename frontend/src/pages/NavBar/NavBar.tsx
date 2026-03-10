@@ -5,8 +5,12 @@ import { useWatchListContext } from '../../contexts/WatchListContext';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useFilterContext } from '../../contexts/FilterContext';
 import { useFavouritesContext } from '../../contexts/FavouritesContext';
+import { useState } from 'react';
+import { LogoutDialog } from '../../components/LogoutDialog';
+import { createPortal } from 'react-dom';
 
 export const NavBar: React.FC = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const navigate = useNavigate();
   const { movieIds: watchListMovieIds } = useWatchListContext();
   const { movieIds: favouritesMovieIds } = useFavouritesContext();
@@ -21,7 +25,8 @@ export const NavBar: React.FC = () => {
     <nav className="navbar">
       <div className="navbar-inner">
         <Link to="/" className="navbar-brand" onClick={resetFilters}>
-          <span className="is-hidden-mobile">🎬 </span>MOVIETON
+          <span className="navbar-brand-full">🎬 MOVIETON</span>
+          <span className="navbar-brand-icon">🎬</span>
         </Link>
 
         <div className="navbar-actions">
@@ -30,8 +35,7 @@ export const NavBar: React.FC = () => {
               className="button is-light logout"
               title={'Log out'}
               onClick={() => {
-                logout();
-                navigate('/');
+                setIsDialogOpen(true);
               }}
             >
               <span className="icon">
@@ -93,6 +97,21 @@ export const NavBar: React.FC = () => {
               <span className="is-hidden-mobile">Profile</span>
             </Link>
           )}
+          {isDialogOpen &&
+            createPortal(
+              <LogoutDialog
+                onCancel={() => setIsDialogOpen(false)}
+                onConfirm={async () => {
+                  try {
+                    await logout();
+                    navigate('/');
+                  } finally {
+                    setIsDialogOpen(false);
+                  }
+                }}
+              />,
+              document.body,
+            )}
         </div>
       </div>
     </nav>

@@ -131,4 +131,23 @@
 }
 
 
+.navbar-brand-icon {
+  display: none;
+}
 
+@media (max-width: 480px) {
+    .navbar-brand {
+    margin-right: 1.5rem;
+  }
+
+  .navbar-brand-full {
+    display: none;
+  }
+
+  .navbar-brand-icon {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+}
