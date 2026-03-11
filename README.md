@@ -133,12 +133,14 @@ Project
 
 ### Backend `.env`
 ```
+# backend/.env.example
 DATABASE_URL=
-JWT_SECRET="your-super-secret-key-change-in-production"
+JWT_SECRET=
 PORT=5000
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
+
 ```
 
 ### Frontend `.env`
