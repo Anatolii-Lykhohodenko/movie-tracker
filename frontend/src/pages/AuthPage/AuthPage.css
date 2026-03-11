@@ -208,5 +208,20 @@
 }
 
 .auth-spinner-icon {
-  margin-right: 10px !important; /* !important чтобы перебить Bulma */
+  margin-right: 10px !important;
+}
+
+.control.has-icons-right .input {
+  padding-right: 3rem;
+}
+
+.control .icon.is-small.is-right {
+  position: absolute !important;
+  right: 1rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #9ca3af !important;
+  width: auto !important;
+  height: auto !important;
+  font-size: 1rem !important;
 }

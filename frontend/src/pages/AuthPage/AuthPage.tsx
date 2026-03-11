@@ -7,6 +7,7 @@ import './AuthPage.css';
 export const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -66,7 +67,7 @@ export const AuthPage: React.FC = () => {
               <div className="control has-icons-left">
                 <input
                   className={`input ${error ? 'is-danger' : ''}`}
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -74,6 +75,13 @@ export const AuthPage: React.FC = () => {
                 />
                 <span className="icon is-small is-left">
                   <i className="fas fa-lock"></i>
+                </span>
+                <span
+                  className="icon is-small is-right"
+                  style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                  onClick={() => setShowPassword(prev => !prev)}
+                >
+                  <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                 </span>
               </div>
             </div>

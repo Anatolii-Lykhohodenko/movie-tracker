@@ -6,6 +6,8 @@ import '../AuthPage/AuthPage.css';
 
 export const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
@@ -99,7 +101,7 @@ export const RegisterPage: React.FC = () => {
                 <input
                   id="password"
                   className="input"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -107,6 +109,13 @@ export const RegisterPage: React.FC = () => {
                 />
                 <span className="icon is-small is-left">
                   <i className="fas fa-lock"></i>
+                </span>
+                <span
+                  className="icon is-small is-right"
+                  style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                  onClick={() => setShowPassword(prev => !prev)}
+                >
+                  <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                 </span>
               </div>
             </div>
@@ -119,7 +128,7 @@ export const RegisterPage: React.FC = () => {
                 <input
                   id="confirmPassword"
                   className="input"
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
@@ -128,16 +137,23 @@ export const RegisterPage: React.FC = () => {
                 <span className="icon is-small is-left">
                   <i className="fas fa-lock"></i>
                 </span>
+                <span
+                  className="icon is-small is-right"
+                  style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+                  onClick={() => setShowConfirmPassword(prev => !prev)}
+                >
+                  <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </span>
               </div>
             </div>
 
             <div className="field">
-              <label className="label has-text-grey" htmlFor="text">
+              <label className="label has-text-grey" htmlFor="name">
                 Enter your name
               </label>
               <div className="control has-icons-left">
                 <input
-                  id="text"
+                  id="name"
                   className="input"
                   type="text"
                   value={name}

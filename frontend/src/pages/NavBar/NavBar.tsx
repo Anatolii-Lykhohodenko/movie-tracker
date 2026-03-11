@@ -1,4 +1,3 @@
-// Header.tsx (или Navbar.tsx)
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './NavBar.css';
 import { useWatchListContext } from '../../contexts/WatchListContext';
