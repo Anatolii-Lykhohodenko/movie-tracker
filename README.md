@@ -1,73 +1,136 @@
-# React + TypeScript + Vite
+# 🎬 MovieTracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack movie tracking application inspired by Netflix.
+Browse movies, manage your watchlist, write reviews and rate films.
 
-Currently, two official plugins are available:
+🔗 **[Live Demo](https://movie-tracker-virid.vercel.app/)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🔍 Browse & search movies with infinite scroll
+- 🎛 Advanced filtering by genre, rating, year (TMDB Discover API)
+- 🎬 Movie details with YouTube trailers
+- ❤️ Watchlist & Favorites management
+- ⭐ Ratings & reviews with sorting
+- 👤 User profiles with avatar upload
+- 🔐 JWT authentication (register/login)
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Frontend
+- React 18 + TypeScript
+- TanStack Query (infinite scroll, caching)
+- React Router v6
+- Axios + interceptors
+- Bulma CSS
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backend
+- Node.js + Express + TypeScript
+- Prisma ORM + PostgreSQL
+- JWT + bcrypt
+- Zod validation
+- Cloudinary (avatar storage)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🚀 Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Prerequisites
+- Node.js 18+
+- PostgreSQL
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
+```bash
+# Clone
+git clone https://github.com/Anatolii-Lykhohodenko/movie-tracker
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# Backend
+cd backend
+cp .env.example .env  # fill in your variables
+npm install
+npx prisma migrate dev
+npm run dev
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+# Frontend
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+
+## 📁 Project Structure
+​```
+
+Project
+├── backend
+|  ├── nodemon.json
+|  ├── package-lock.json
+|  ├── package.json
+|  ├── prisma
+|  |  ├── migrations
+|  |  └── schema.prisma
+|  ├── prisma.config.ts
+|  ├── src
+|  |  ├── cloudinary.ts
+|  |  ├── controllers
+|  |  ├── index.ts
+|  |  ├── middleware
+|  |  ├── prisma.ts
+|  |  ├── routes
+|  |  ├── schemas
+|  |  ├── services
+|  |  └── types
+|  └── tsconfig.json
+├── frontend
+|  ├── eslint.config.js
+|  ├── index.html
+|  ├── package-lock.json
+|  ├── package.json
+|  ├── public
+|  |  └── film-slate.svg
+|  ├── src
+|  |  ├── App.css
+|  |  ├── App.tsx
+|  |  ├── components
+|  |  ├── contexts
+|  |  ├── hooks
+|  |  ├── index.css
+|  |  ├── main.tsx
+|  |  ├── pages
+|  |  ├── Root.tsx
+|  |  ├── services
+|  |  ├── types
+|  |  └── utils
+|  ├── tsconfig.app.json
+|  ├── tsconfig.json
+|  ├── tsconfig.node.json
+|  ├── vercel.json
+|  └── vite.config.ts
+├── package-lock.json
+├── package.json
+└── README.md
+
+​```
+
+## 🌍 Environment Variables
+
+### Backend `.env`
+​```
+DATABASE_URL=
+JWT_SECRET="your-super-secret-key-change-in-production"
+PORT=5000
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+​```
+
+### Frontend `.env`
+​```
+
+VITE_TMDB_API_KEY=
+VITE_TMDB_BASE_URL=
+VITE_TMDB_IMAGE_BASE_URL=
+VITE_APP_BASE_URL=
+​```
+
+## 📄 License
+MIT
