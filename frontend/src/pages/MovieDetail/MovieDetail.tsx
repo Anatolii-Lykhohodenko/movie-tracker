@@ -25,10 +25,19 @@ type Review = {
   };
 };
 
+enum SortType {
+  Best = 'best',
+  Worst = 'worst',
+  Latest = 'latest',
+}
+
 export const MovieDetail: React.FC = () => {
   const queryClient = useQueryClient();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
+  const [sortType, setSortType] = useState<SortType>(SortType.Latest);
   const { isInWatchlist, toggleWatchlist } = useWatchListContext();
   const { isInFavourites, toggleFavourites } = useFavouritesContext();
   const { user } = useAuthContext();
@@ -96,9 +105,12 @@ export const MovieDetail: React.FC = () => {
 
   const sortedReviews = [...(reviewData?.data?.ratingData?.ratings ?? [])].sort(
     (a: Review, b: Review) => {
-      if (a.user.name === user?.name) return -1;
-      if (b.user.name === user?.name) return 1;
-      return 0;
+      if (a.user.id === user?.id) return -1;
+      if (b.user.id === user?.id) return 1;
+
+      if (sortType === 'best') return b.rating - a.rating;
+      if (sortType === 'worst') return a.rating - b.rating;
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     },
   );
 
@@ -108,7 +120,7 @@ export const MovieDetail: React.FC = () => {
 
   const handleReviewSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // setLoading(true)
+    setIsSubmitting(true);
     try {
       await api.post(`/movies/${movie.id}/rate`, { comment, rating });
       queryClient.invalidateQueries({ queryKey: ['reviews', movieId] });
@@ -118,10 +130,27 @@ export const MovieDetail: React.FC = () => {
         throw new Error(err.response?.data?.error ?? 'Login failed');
       }
       throw err;
+    } finally {
+      setIsSubmitting(false);
     }
-    // finally {
-    //   setLoading(false)
-    // }
+  };
+
+  const handleReviewDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete(`/movies/${movie.id}/rate`);
+      queryClient.invalidateQueries({ queryKey: ['reviews', movieId] });
+      setIsShowForm(true);
+      setComment('');
+      setRating(0);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        throw new Error(err.response?.data?.error ?? 'Login failed');
+      }
+      throw err;
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const backdropUrl = movie.backdrop_path
@@ -343,9 +372,29 @@ export const MovieDetail: React.FC = () => {
       {/* ========== REVIEWS SECTION ========== */}
       <section className="section reviews-section">
         <div className="container">
-          <h2 className="title is-4 reviews-title">Reviews</h2>
+          <div className="reviews-title-row">
+            <h2 className="title is-4 mb-0">Reviews</h2>
+            {sortedReviews.length > 0 && (
+              <div className="buttons reviews-sort-group mb-0">
+                {(
+                  [
+                    [SortType.Latest, '🕐 Latest'],
+                    [SortType.Best, '★ Best'],
+                    [SortType.Worst, '☆ Worst'],
+                  ] as const
+                ).map(([val, label]) => (
+                  <button
+                    key={val}
+                    className={`button is-small ${sortType === val ? 'is-primary' : 'is-light'}`}
+                    onClick={() => setSortType(val)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-          {/* Форма — только для залогиненных */}
           {user && isShowForm && !isReviewLoading && (
             <form className="review-form-wrapper" onSubmit={handleReviewSubmit}>
               <h3 className="review-form-heading">Leave a Review</h3>
@@ -374,68 +423,95 @@ export const MovieDetail: React.FC = () => {
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComment(e.target.value)}
               />
 
-              <button className="button is-primary review-submit" type="submit">
+              <button
+                className="button is-primary review-submit"
+                type="submit"
+                disabled={isSubmitting}
+              >
                 <span className="icon">
-                  <i className="fas fa-paper-plane" />
+                  <i className={`fas ${isSubmitting ? 'fa-spinner fa-spin' : 'fa-paper-plane'}`} />
                 </span>
-                <span>Submit Review</span>
+                <span>{isSubmitting ? 'Submitting...' : 'Submit Review'}</span>
               </button>
             </form>
           )}
 
           {/* Reviews list */}
           <div className="reviews-list">
-            {sortedReviews.map((review: Review) => {
-              const {
-                user: reviewUser,
-                updatedAt,
-                rating: reviewRating,
-                comment: reviewComment,
-              } = review;
+            {isReviewLoading ? (
+              <Loader size="medium" />
+            ) : sortedReviews.length > 0 ? (
+              sortedReviews.map((review: Review) => {
+                const {
+                  user: reviewUser,
+                  updatedAt,
+                  rating: reviewRating,
+                  comment: reviewComment,
+                } = review;
 
-              const date = new Date(updatedAt).toLocaleDateString('en-US', {
-                month: 'long',
-                year: 'numeric',
-              });
-              return (
-                <div key={`${reviewUser.name}${updatedAt}`} className="review-card">
-                  <div className="review-header">
-                    <div className="review-avatar">
-                      {reviewUser.avatar ? (
-                        <img src={review.user.avatar} alt={reviewUser.name} />
-                      ) : (
-                        reviewUser.name.charAt(0).toUpperCase()
+                const date = new Date(updatedAt).toLocaleDateString('en-US', {
+                  month: 'long',
+                  year: 'numeric',
+                });
+                return (
+                  <div key={`${reviewUser.name}${updatedAt}`} className="review-card">
+                    <div className="review-header">
+                      <div className="review-avatar">
+                        {reviewUser.avatar ? (
+                          <img src={review.user.avatar} alt={reviewUser.name} />
+                        ) : (
+                          reviewUser.name.charAt(0).toUpperCase()
+                        )}
+                      </div>
+
+                      <div className="review-meta">
+                        <span className="review-username">{reviewUser.name}</span>
+                        <span className="review-date">{date}</span>
+                      </div>
+                      <div className="review-rating">
+                        <span className="review-stars">
+                          {'★'.repeat(reviewRating)}
+                          {'☆'.repeat(10 - reviewRating)}
+                        </span>
+                        <span className="review-score">{reviewRating} / 10</span>
+                      </div>
+                      {Number(reviewUser.id) === Number(user?.id) && (
+                        <>
+                          <button
+                            className={`button is-small edit-review-btn ${isShowForm ? 'is-light' : 'is-warning is-light'}`}
+                            onClick={() => setIsShowForm(prev => !prev)}
+                            title={isShowForm ? 'Cancel edit' : 'Edit review'}
+                          >
+                            <span className="icon">
+                              <i className={`fas ${isShowForm ? 'fa-times' : 'fa-edit'}`} />
+                            </span>
+                          </button>
+                          <button
+                            className="button is-small edit-review-btn is-danger is-light"
+                            onClick={handleReviewDelete}
+                            disabled={isDeleting}
+                            title="Delete review"
+                          >
+                            <span className="icon">
+                              <i
+                                className={`fas ${isDeleting ? 'fa-spinner fa-spin' : 'fa-trash'}`}
+                              />
+                            </span>
+                          </button>
+                        </>
                       )}
                     </div>
-
-                    <div className="review-meta">
-                      <span className="review-username">{reviewUser.name}</span>
-                      <span className="review-date">{date}</span>
-                    </div>
-                    <div className="review-rating">
-                      <span className="review-stars">
-                        {'★'.repeat(reviewRating)}
-                        {'☆'.repeat(10 - reviewRating)}
-                      </span>
-                      <span className="review-score">{reviewRating} / 10</span>
-                    </div>
-                    {Number(reviewUser.id) === Number(user?.id) && (
-                      <button
-                        className={`button is-small edit-review-btn ${isShowForm ? 'is-light' : 'is-warning is-light'}`}
-                        onClick={() => setIsShowForm(prev => !prev)}
-                        style={{ width: '110px' }}
-                      >
-                        <span className="icon">
-                          <i className={`fas ${isShowForm ? 'fa-times' : 'fa-edit'}`} />
-                        </span>
-                        <span>{isShowForm ? 'Cancel' : 'Edit review'}</span>
-                      </button>
-                    )}
+                    <p className="review-comment">{reviewComment}</p>
                   </div>
-                  <p className="review-comment">{reviewComment}</p>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="reviews-empty">
+                <i className="fas fa-comment-slash reviews-empty-icon" />
+                <p className="reviews-empty-text">No reviews yet</p>
+                <p className="reviews-empty-sub">Be the first to share your thoughts!</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

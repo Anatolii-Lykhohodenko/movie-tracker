@@ -9,6 +9,7 @@ import {
   toggleFavorites,
   toggleWatchlist,
   getReviewIfExists,
+  deleteMovieRate,
 } from '../controllers/movie.controller';
 const router = Router();
 
@@ -20,6 +21,7 @@ router.get('/favorites', getFavorites);
 router.post('/:movieId/watchlist', toggleWatchlist);
 router.post('/:movieId/favorites', toggleFavorites);
 router.post('/:movieId/rate',authMiddleware,  rateMovie);
+router.delete('/:movieId/rate', authMiddleware, deleteMovieRate);
 router.get('/:movieId/rate', getMovieRate);
 router.get('/:movieId/my-review', authMiddleware, getReviewIfExists);
 

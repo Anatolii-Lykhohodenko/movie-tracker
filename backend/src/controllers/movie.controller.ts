@@ -138,6 +138,27 @@ export const rateMovie = async (req: Request, res: Response) => {
     return res.status(500).json({ error });
   }
 };
+export const deleteMovieRate = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.user!;
+    const movieId = Number(req.params.movieId);
+
+    if (isNaN(movieId)) {
+      return res.status(400).json({ error: 'Invalid movie ID' });
+    }
+
+    const { id } = await prisma.userMovie.update({
+      where: { userId_movieId: { movieId, userId } },
+      data: { rating: null, comment: null },
+    });
+
+    return res.status(200).json({ id });
+  } catch (err) {
+    const error = err instanceof Error ? err.message : 'Server error';
+
+    return res.status(500).json({ error });
+  }
+};
 
 export const getMovieRate = async (req: Request, res: Response) => {
   try {
