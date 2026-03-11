@@ -76,8 +76,8 @@ npm run dev
 ```
 
 ## 📁 Project Structure
-​```
 
+```
 Project
 ├── backend
 |  ├── nodemon.json
@@ -126,29 +126,28 @@ Project
 ├── package-lock.json
 ├── package.json
 └── README.md
-
-​```
+...
+```
 
 ## 🌍 Environment Variables
 
 ### Backend `.env`
-​```
+```
 DATABASE_URL=
 JWT_SECRET="your-super-secret-key-change-in-production"
 PORT=5000
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
-​```
+```
 
 ### Frontend `.env`
-​```
-
+```
 VITE_TMDB_API_KEY=
 VITE_TMDB_BASE_URL=
 VITE_TMDB_IMAGE_BASE_URL=
 VITE_APP_BASE_URL=
-​```
+```
 
 ## 📄 License
 MIT
