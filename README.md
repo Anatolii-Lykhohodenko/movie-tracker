@@ -33,6 +33,23 @@ Browse movies, manage your watchlist, write reviews and rate films.
 - Zod validation
 - Cloudinary (avatar storage)
 
+## 📸 Screenshots
+
+| Home | Home with Filters |
+|------|------------------|
+| ![Home](https://github.com/user-attachments/assets/5701000b-3163-4f82-a7ee-6194ac3d941b) | ![Filters](https://github.com/user-attachments/assets/0bd17dbd-0f0b-492f-a039-f0cc7a571b7d) |
+
+| Watchlist | Profile |
+|-----------|---------|
+| ![Watchlist](https://github.com/user-attachments/assets/cfa210fb-7b18-4752-8959-dc9238e0e5a4) | ![Profile](https://github.com/user-attachments/assets/26e82934-5c92-4ce6-bfbb-dcc31c9f42b3) |
+
+**Movie Detail**
+
+![Movie Detail 1](https://github.com/user-attachments/assets/20da9349-62bc-4c04-890a-084b949cfc18)
+![Movie Detail 2](https://github.com/user-attachments/assets/aef02a8a-48ca-4aab-b984-4f64fcacb8e2)
+![Movie Detail 3](https://github.com/user-attachments/assets/50eb97da-1364-48d4-b32d-69f40d0a6dbe)
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -46,7 +63,7 @@ git clone https://github.com/Anatolii-Lykhohodenko/movie-tracker
 
 # Backend
 cd backend
-cp .env.example .env  # fill in your variables
+cp .env.example .env
 npm install
 npx prisma migrate dev
 npm run dev
@@ -56,6 +73,7 @@ cd frontend
 cp .env.example .env
 npm install
 npm run dev
+```
 
 ## 📁 Project Structure
 ​```
