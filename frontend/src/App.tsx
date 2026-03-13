@@ -9,7 +9,7 @@ import { useAuthContext } from './contexts/AuthContext';
 
 export const App: React.FC = () => {
   const { pathname } = useLocation();
-  const showFilter = ['/', '/watchlist'].includes(pathname);
+  const showFilter = ['/'].includes(pathname); // watchlist TODO
   const { user } = useAuthContext();
 
   return (
