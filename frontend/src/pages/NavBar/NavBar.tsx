@@ -17,7 +17,7 @@ export const NavBar: React.FC = () => {
   const { toggleSidebar } = useFilterContext();
   const { resetFilters } = useFilterContext();
   const { pathname } = useLocation();
-  const showFilter = ['/', '/watchlist'].includes(pathname);
+  const showFilter = ['/'].includes(pathname); // TODO watchlist
   const isAuthPage = ['/login', '/register'].includes(pathname);
 
   return (
