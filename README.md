@@ -17,22 +17,6 @@ Browse movies, manage your watchlist, write reviews and rate films.
 - 👤 User profiles with avatar upload
 - 🔐 JWT authentication (register/login)
 
-## 🛠 Tech Stack
-
-### Frontend
-- React 18 + TypeScript
-- TanStack Query (infinite scroll, caching)
-- React Router v6
-- Axios + interceptors
-- Bulma CSS
-
-### Backend
-- Node.js + Express + TypeScript
-- Prisma ORM + PostgreSQL
-- JWT + bcrypt
-- Zod validation
-- Cloudinary (avatar storage)
-
 ## 📸 Screenshots
 
 | Home | Home with Filters |
@@ -48,6 +32,22 @@ Browse movies, manage your watchlist, write reviews and rate films.
 ![Movie Detail 1](https://github.com/user-attachments/assets/20da9349-62bc-4c04-890a-084b949cfc18)
 ![Movie Detail 2](https://github.com/user-attachments/assets/aef02a8a-48ca-4aab-b984-4f64fcacb8e2)
 ![Movie Detail 3](https://github.com/user-attachments/assets/50eb97da-1364-48d4-b32d-69f40d0a6dbe)
+
+## 🛠 Tech Stack
+
+### Frontend
+- React 18 + TypeScript
+- TanStack Query (infinite scroll, caching)
+- React Router v6
+- Axios + interceptors
+- Bulma CSS
+
+### Backend
+- Node.js + Express + TypeScript
+- Prisma ORM + PostgreSQL
+- JWT + bcrypt
+- Zod validation
+- Cloudinary (avatar storage)
 
 ## 🧠 Technical Decisions
 
