@@ -49,6 +49,26 @@ Browse movies, manage your watchlist, write reviews and rate films.
 ![Movie Detail 2](https://github.com/user-attachments/assets/aef02a8a-48ca-4aab-b984-4f64fcacb8e2)
 ![Movie Detail 3](https://github.com/user-attachments/assets/50eb97da-1364-48d4-b32d-69f40d0a6dbe)
 
+## 🧠 Technical Decisions
+
+- **Combined search & filtering in a single request** — instead of debouncing 
+  keystroke-by-keystroke search, filters (genre, year, rating) and the text 
+  query are submitted together via an "Apply Filters" action, letting users 
+  narrow results precisely (e.g. finding a horror movie titled "Blockbuster" 
+  without ambiguity) while keeping API calls to TMDB intentional and low.
+- **TanStack Query as the caching layer** — identical requests within its 
+  cache window are served from memory instead of hitting TMDB again, which 
+  matters most on movie detail pages users revisit often.
+- **No local movie duplication** — only TMDB movie IDs are stored in the 
+  database (watchlist, favorites, reviews reference IDs, not movie data). 
+  Mirroring full TMDB records locally would require a sync scheduler to keep 
+  data fresh — extra infrastructure that isn't justified at this scale, so 
+  movie details are fetched on demand and cached client-side instead.
+- **JWT + bcrypt for auth** — stateless authentication avoids server-side 
+  session storage, simplifying horizontal scaling; bcrypt hashing protects 
+  stored credentials even in case of a data leak.
+- **Cloudinary for avatar storage** — offloads image processing/CDN delivery 
+  instead of storing binary data in PostgreSQL, keeping the database lean.
 
 ## 🚀 Getting Started
 
